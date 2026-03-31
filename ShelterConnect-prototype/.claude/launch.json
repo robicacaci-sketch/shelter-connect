@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Frontend (Vite)",
+      "runtimeExecutable": "/Users/roberto.cacaci/.local/bin/node",
+      "runtimeArgs": ["/Users/roberto.cacaci/Akhaton developer/frontend/node_modules/.bin/vite", "/Users/roberto.cacaci/Akhaton developer/frontend"],
+      "port": 5173
+    },
+    {
+      "name": "Backend (Express + ts-node-dev)",
+      "runtimeExecutable": "/Users/roberto.cacaci/.local/bin/node",
+      "runtimeArgs": [
+        "/Users/roberto.cacaci/Akhaton developer/backend/node_modules/.bin/ts-node-dev",
+        "--respawn",
+        "--transpile-only",
+        "--project", "/Users/roberto.cacaci/Akhaton developer/backend/tsconfig.json",
+        "/Users/roberto.cacaci/Akhaton developer/backend/src/server.ts"
+      ],
+      "port": 4000
+    }
+  ]
+}

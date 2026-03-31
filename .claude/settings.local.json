@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(/usr/local/bin/node_modules/.bin/tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(grep -E \"^\\(node|npm|npx\\)$\")",
+      "Bash(echo $PATH)",
+      "Read(//nix/**)",
+      "Bash(pkgutil --pkgs)",
+      "Bash(/Users/roberto.cacaci/.local/bin/node /Users/roberto.cacaci/.local/lib/node_modules/npm/bin/npm-cli.js install)",
+      "Bash(export PATH=\"/Users/roberto.cacaci/.local/bin:$PATH\")",
+      "Bash(npm install:*)",
+      "Bash(/Users/roberto.cacaci/.local/bin/npm install:*)",
+      "Bash(PATH=\"/Users/roberto.cacaci/.local/bin:$PATH\" npm install multer)",
+      "Bash(PATH=\"/Users/roberto.cacaci/.local/bin:$PATH\" npm install --save-dev @types/multer)",
+      "Bash(PATH=\"/Users/roberto.cacaci/.local/bin:$PATH\" npm install multer @types/multer --save-dev)",
+      "Bash(/Users/roberto.cacaci/.local/lib/node_modules/npm/bin/npm install:*)",
+      "Bash(curl -s http://localhost:4000/api/clients -H \"Authorization: Bearer invalid\")",
+      "Bash(curl -s -X PATCH http://localhost:4000/api/clients/test-id/status -H \"Content-Type: application/json\" -H \"Authorization: Bearer invalid\" -d '{\"\"case_status\"\":\"\"Placed\"\"}')",
+      "Bash(curl -s http://localhost:4000/api/clients -H \"Authorization: Bearer bad\")",
+      "Bash(curl -s -X PATCH http://localhost:4000/api/clients/x/status -H \"Authorization: Bearer bad\" -H \"Content-Type: application/json\" -d '{\"\"case_status\"\":\"\"Placed\"\"}')",
+      "Bash(grep -v \"^$\")",
+      "Bash(curl -s -X DELETE http://localhost:4000/api/clients/test-id -H \"Authorization: Bearer invalid\")"
+    ]
+  }
+}
