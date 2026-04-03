@@ -454,7 +454,7 @@ export const COMBO_MATRIX: Record<string, ComboEntry> = {
     estimatedTime: "2–3 weeks for SSN; intake starts immediately",
     programsAccessible: ["NJ CoC Coordinated Entry (NOW)", "NJ FamilyCare / Medicaid", "NJ SNAP", "NJ DCA Housing Programs"],
   },
-  "Y-Y-N-N-N": {
+  "Y-Y-N-N-N-26": {
     comboId: 26,
     priority: "HIGH",
     docsHave: ["Birth Cert", "SSN Card"],
