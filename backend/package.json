@@ -2,6 +2,7 @@
   "name": "housing-readiness-backend",
   "version": "1.0.0",
   "description": "Backend API for Housing Readiness Tracker (Node.js/Express + SQLite)",
+  "keywords": ["nodejs", "express", "sqlite"],
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
