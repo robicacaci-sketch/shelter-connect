@@ -2,7 +2,11 @@
   "name": "housing-readiness-backend",
   "version": "1.0.0",
   "description": "Backend API for Housing Readiness Tracker (Node.js/Express + SQLite)",
-  "keywords": ["nodejs", "express", "sqlite"],
+  "keywords": [
+    "nodejs",
+    "express",
+    "sqlite"
+  ],
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -18,7 +22,6 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^2.1.0",
