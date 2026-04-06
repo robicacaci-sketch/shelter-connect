@@ -36,6 +36,7 @@ export interface ActionPlanStep {
   action: string;             // What to do (e.g. "Call 1-800-XXX")
   phone?: string;             // Phone number if applicable
   address?: string;           // Address if applicable
+  stage?: string;             // Visual pipeline column label (e.g. "Identity Documents")
   what_to_ask_for: string;    // Exactly what to say or request
   goal_of_this_step: string;  // What document/outcome this step produces
   why_it_matters: string;     // One sentence linking this step to the final goal
