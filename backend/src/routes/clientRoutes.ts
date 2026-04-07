@@ -369,6 +369,39 @@ router.patch(
   }
 );
 
+// PATCH /:clientId/roadmap/steps/:stepId/notes — save a case manager note on a step
+router.patch(
+  "/:clientId/roadmap/steps/:stepId/notes",
+  requireAuth,
+  async (req: AuthenticatedRequest, res): Promise<void> => {
+    const userId = req.userId;
+    if (!userId) { res.status(401).json({ error: "Unauthenticated" }); return; }
+
+    const { clientId, stepId } = req.params;
+    const { notes } = req.body ?? {};
+
+    if (typeof notes !== "string") {
+      res.status(400).json({ error: "notes must be a string" });
+      return;
+    }
+
+    const client = await getClientForCaseManager(clientId, userId);
+    if (!client) { res.status(404).json({ error: "Client not found" }); return; }
+
+    db.run(
+      `UPDATE roadmapSteps SET notes = ? WHERE id = ? AND roadmapId IN (
+         SELECT id FROM roadmaps WHERE clientId = ?
+       )`,
+      [notes.trim(), stepId, clientId],
+      function (err) {
+        if (err) { res.status(500).json({ error: "Failed to save note" }); return; }
+        if (this.changes === 0) { res.status(404).json({ error: "Step not found" }); return; }
+        res.json({ success: true });
+      }
+    );
+  }
+);
+
 // DELETE /:clientId — permanently remove client and all associated data
 router.delete(
   "/:clientId",

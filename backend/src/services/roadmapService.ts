@@ -87,7 +87,7 @@ const getExistingRoadmapWithSteps = (
         if (!roadmapRow) { resolve(null); return; }
 
         db.all<RoadmapStep>(
-          `SELECT id, roadmapId, stage, title, description, status, "order" as "order"
+          `SELECT id, roadmapId, stage, title, description, status, "order" as "order", notes
            FROM roadmapSteps WHERE roadmapId = ? ORDER BY "order" ASC`,
           [roadmapRow.id],
           (stepsErr, stepRows) => {

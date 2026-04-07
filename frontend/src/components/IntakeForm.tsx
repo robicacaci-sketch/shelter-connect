@@ -154,6 +154,27 @@ const circumstanceLabel = (value: string): string =>
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
+// Card wrapper for Step 1 fields — highlights border on focus-within
+const FieldCard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={{
+        border: `1.5px solid ${focused ? "#38bdf8" : "#1e293b"}`,
+        borderRadius: "0.75rem",
+        backgroundColor: "#111827",
+        padding: "1.5rem",
+        marginBottom: "0.875rem",
+        transition: "border-color 0.15s ease",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 const ProgressBar: React.FC<{ step: number }> = ({ step }) => {
   return (
     <div style={{ marginBottom: "2rem" }}>
@@ -343,89 +364,210 @@ const IntakeForm: React.FC = () => {
 
   // ─── Render steps ─────────────────────────────────────────────────────────
 
-  const renderStep1 = () => (
-    <fieldset className="form__section" style={{ border: "none", padding: 0, margin: 0 }}>
-      <legend className="form__legend" style={{ marginBottom: "1.25rem" }}>Personal Information</legend>
+  const renderStep1 = () => {
+    const labelStyle: React.CSSProperties = {
+      display: "block",
+      fontSize: "0.95rem",
+      fontWeight: 600,
+      color: "#f9fafb",
+      marginBottom: "0.2rem",
+    };
+    const helperStyle: React.CSSProperties = {
+      fontSize: "0.8rem",
+      color: "#6b7280",
+      margin: "0.2rem 0 0.75rem",
+    };
+    const inputStyle: React.CSSProperties = {
+      width: "100%",
+      padding: "0.65rem 0.75rem",
+      borderRadius: "0.375rem",
+      border: "1px solid #1f2937",
+      backgroundColor: "#0f172a",
+      color: "#f9fafb",
+      fontSize: "0.95rem",
+      boxSizing: "border-box",
+      outline: "none",
+    };
 
-      <div className="form__field">
-        <label htmlFor="name">Full Name <span style={{ color: "#ef4444" }}>*</span></label>
-        <input id="name" name="name" type="text" value={form.name} onChange={handleText}
-          placeholder="Client's full name" autoComplete="off" />
+    return (
+      <div>
+        <h3 style={{ margin: "0 0 1.25rem", fontWeight: 700, color: "#f9fafb" }}>Personal Information</h3>
+
+        <FieldCard>
+          <label htmlFor="name" style={labelStyle}>
+            Full Name <span style={{ color: "#ef4444" }}>*</span>
+          </label>
+          <p style={helperStyle}>First and last name of the client</p>
+          <input id="name" name="name" type="text" value={form.name} onChange={handleText}
+            placeholder="Client's full name" autoComplete="off" style={inputStyle} />
+        </FieldCard>
+
+        <FieldCard>
+          <label htmlFor="dateOfBirth" style={labelStyle}>Date of Birth</label>
+          <p style={helperStyle}>Used to verify identity for housing applications</p>
+          <input id="dateOfBirth" name="dateOfBirth" type="date" value={form.dateOfBirth}
+            onChange={handleText} style={inputStyle} />
+        </FieldCard>
+
+        <FieldCard>
+          <label htmlFor="phone" style={labelStyle}>Phone Number</label>
+          <p style={helperStyle}>Best number to reach the client</p>
+          <input id="phone" name="phone" type="text" value={form.phone} onChange={handleText}
+            placeholder="555-000-0000" style={inputStyle} />
+        </FieldCard>
+
+        <FieldCard>
+          <label htmlFor="email" style={labelStyle}>Email Address</label>
+          <p style={helperStyle}>Optional — for document delivery</p>
+          <input id="email" name="email" type="email" value={form.email} onChange={handleText}
+            placeholder="optional" style={inputStyle} />
+        </FieldCard>
+
+        <FieldCard>
+          <label style={labelStyle}>Number of Dependents</label>
+          <p style={helperStyle}>Children or other household members</p>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            {["0", "1", "2", "3", "4+"].map((v) => {
+              const isSelected = form.numberOfDependents === v;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => set("numberOfDependents", v)}
+                  style={{
+                    minWidth: "3rem",
+                    padding: "0.5rem 0.5rem",
+                    borderRadius: "999px",
+                    border: `1.5px solid ${isSelected ? "#2563eb" : "#374151"}`,
+                    backgroundColor: isSelected ? "#2563eb" : "transparent",
+                    color: isSelected ? "#ffffff" : "#9ca3af",
+                    cursor: "pointer",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    textAlign: "center",
+                  }}
+                >
+                  {v}
+                </button>
+              );
+            })}
+          </div>
+        </FieldCard>
       </div>
+    );
+  };
 
-      <div className="form__field">
-        <label htmlFor="dateOfBirth">Date of Birth</label>
-        <input id="dateOfBirth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleText} />
-      </div>
-
-      <div className="form__field">
-        <label htmlFor="phone">Phone Number</label>
-        <input id="phone" name="phone" type="text" value={form.phone} onChange={handleText}
-          placeholder="555-000-0000" />
-      </div>
-
-      <div className="form__field">
-        <label htmlFor="email">Email Address</label>
-        <input id="email" name="email" type="email" value={form.email} onChange={handleText}
-          placeholder="optional" />
-      </div>
-
-      <div className="form__field">
-        <label htmlFor="numberOfDependents">Number of Dependents</label>
-        <select id="numberOfDependents" name="numberOfDependents" value={form.numberOfDependents} onChange={handleText}>
-          {["0","1","2","3","4+"].map((v) => <option key={v} value={v}>{v}</option>)}
-        </select>
-        <p style={{ fontSize: "0.78rem", color: "#6b7280", marginTop: "0.25rem" }}>
-          Children or other dependents in the household
+  const renderStep2 = () => {
+    const renderGroup = (
+      question: string,
+      helper: string,
+      field: "currentShelterStatus" | "durationHomeless" | "housingGoal" | "specialCircumstance",
+      options: { value: string; label: string }[],
+      required: boolean,
+      deselectedValue = ""
+    ) => (
+      <div style={{ marginBottom: "2rem" }}>
+        <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#f9fafb", margin: "0 0 0.3rem" }}>
+          {question}{required && <span style={{ color: "#ef4444" }}> *</span>}
         </p>
+        <p style={{ fontSize: "0.82rem", color: "#6b7280", margin: "0 0 1rem" }}>{helper}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          {options.map(({ value, label }) => {
+            const isSelected = form[field] === value;
+            return (
+              <div
+                key={value}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={0}
+                onClick={() => {
+                  if (required) set(field, value);
+                  else set(field, isSelected ? deselectedValue : value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    if (required) set(field, value);
+                    else set(field, isSelected ? deselectedValue : value);
+                  }
+                }}
+                style={{
+                  padding: "1rem 1.25rem",
+                  border: `2px solid ${isSelected ? "#38bdf8" : "#1e293b"}`,
+                  borderRadius: "0.625rem",
+                  backgroundColor: isSelected ? "rgba(56,189,248,0.08)" : "#111827",
+                  cursor: "pointer",
+                  transition: "border-color 0.15s, background 0.15s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.875rem",
+                  userSelect: "none",
+                }}
+              >
+                {/* Radio circle */}
+                <div style={{
+                  width: "1.1rem",
+                  height: "1.1rem",
+                  borderRadius: "50%",
+                  border: `2px solid ${isSelected ? "#38bdf8" : "#374151"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  {isSelected && (
+                    <div style={{ width: "0.5rem", height: "0.5rem", borderRadius: "50%", backgroundColor: "#38bdf8" }} />
+                  )}
+                </div>
+                <span style={{ fontSize: "0.92rem", fontWeight: 500, color: "#f9fafb" }}>{label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </fieldset>
-  );
+    );
 
-  const renderStep2 = () => (
-    <fieldset className="form__section" style={{ border: "none", padding: 0, margin: 0 }}>
-      <legend className="form__legend" style={{ marginBottom: "1.25rem" }}>Housing Situation</legend>
+    const durationOptions = [...DURATION_OPTIONS, { value: "", label: "Prefer not to say" }];
 
-      <div className="form__field">
-        <label htmlFor="currentShelterStatus">Current Housing Situation <span style={{ color: "#ef4444" }}>*</span></label>
-        <select id="currentShelterStatus" name="currentShelterStatus" value={form.currentShelterStatus} onChange={handleText}>
-          <option value="">Select status…</option>
-          {SHELTER_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
+    return (
+      <div>
+        <h3 style={{ margin: "0 0 1.5rem", fontWeight: 700, color: "#f9fafb" }}>Housing Situation</h3>
+
+        {renderGroup(
+          "What is the client's current housing situation?",
+          "Select the option that best describes where they are sleeping right now",
+          "currentShelterStatus",
+          SHELTER_OPTIONS,
+          true
+        )}
+
+        {renderGroup(
+          "How long has the client been without stable housing?",
+          "Include time in shelters, couch-surfing, or the street",
+          "durationHomeless",
+          durationOptions,
+          false,
+          ""
+        )}
+
+        {renderGroup(
+          "What is the client's primary housing goal?",
+          "This shapes the roadmap priority and service matches",
+          "housingGoal",
+          GOAL_OPTIONS,
+          true
+        )}
+
+        {renderGroup(
+          "Does the client have a special circumstance?",
+          "Unlocks targeted resources and program pathways",
+          "specialCircumstance",
+          CIRCUMSTANCE_OPTIONS,
+          false,
+          "none"
+        )}
       </div>
-
-      <div className="form__field">
-        <label htmlFor="durationHomeless">How long has the client been homeless?</label>
-        <select id="durationHomeless" name="durationHomeless" value={form.durationHomeless} onChange={handleText}>
-          <option value="">Select duration…</option>
-          {DURATION_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form__field">
-        <label htmlFor="housingGoal">Housing Goal <span style={{ color: "#ef4444" }}>*</span></label>
-        <select id="housingGoal" name="housingGoal" value={form.housingGoal} onChange={handleText}>
-          <option value="">Select goal…</option>
-          {GOAL_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form__field">
-        <label htmlFor="specialCircumstance">Does the client have a special circumstance?</label>
-        <select id="specialCircumstance" name="specialCircumstance" value={form.specialCircumstance} onChange={handleText}>
-          {CIRCUMSTANCE_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
-      </div>
-    </fieldset>
-  );
+    );
+  };
 
   const renderStep3 = () => (
     <div>

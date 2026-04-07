@@ -362,6 +362,7 @@ const Dashboard: React.FC = () => {
                     <th scope="col">Name</th>
                     <th scope="col">Priority</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Progress</th>
                     <th scope="col">Created</th>
                     <th scope="col">Actions</th>
                   </tr>
@@ -383,6 +384,36 @@ const Dashboard: React.FC = () => {
                             current={client.case_status ?? "Active"}
                             onChange={handleStatusChange}
                           />
+                        </td>
+                        <td>
+                          {(() => {
+                            const total = client.roadmapStepsTotal ?? 0;
+                            const done = client.roadmapStepsCompleted ?? 0;
+                            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                            const color = pct === 100 ? "#22c55e" : pct > 0 ? "#38bdf8" : "#374151";
+                            return (
+                              <div style={{ minWidth: "100px" }}>
+                                <div style={{
+                                  height: "5px",
+                                  borderRadius: "999px",
+                                  backgroundColor: "#1f2937",
+                                  overflow: "hidden",
+                                  marginBottom: "0.3rem"
+                                }}>
+                                  <div style={{
+                                    height: "100%",
+                                    width: `${pct}%`,
+                                    backgroundColor: color,
+                                    borderRadius: "999px",
+                                    transition: "width 0.3s ease"
+                                  }} />
+                                </div>
+                                <span style={{ fontSize: "0.72rem", color: "#6b7280" }}>
+                                  {total === 0 ? "No roadmap yet" : `${done} of ${total} steps`}
+                                </span>
+                              </div>
+                            );
+                          })()}
                         </td>
                         <td>
                           <time dateTime={client.createdAt}>

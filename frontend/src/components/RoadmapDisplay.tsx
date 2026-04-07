@@ -1,6 +1,8 @@
-import React, { useMemo } from "react";
-import { PlanMeta, RoadmapStep } from "../api/clientApi";
+import React, { useState, useMemo } from "react";
+import { PlanMeta, RoadmapStep, updateStepNote } from "../api/clientApi";
+import { useAuth } from "../context/AuthContext";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
 type ActionPlanStep = {
   step_number: number;
   action: string;
@@ -28,7 +30,22 @@ type Props = {
   onStepUpdate?: (stepId: string, newStatus: RoadmapStep["status"]) => void;
 };
 
-// Status cycle: not_started → in_progress → completed → not_started
+// ─── Phase definitions (fixed by step_number) ────────────────────────────────
+const PHASES = [
+  { label: "🪪 Identity & Documents",  min: 1, max: 2 },
+  { label: "🏛️ Benefits & Services",   min: 3, max: 4 },
+  { label: "🏠 Housing Applications",  min: 5, max: 6 },
+  { label: "📋 Next Steps",            min: 7, max: Infinity },
+];
+
+function getPhaseLabel(stepNumber: number): string {
+  for (const phase of PHASES) {
+    if (stepNumber >= phase.min && stepNumber <= phase.max) return phase.label;
+  }
+  return "📋 Next Steps";
+}
+
+// ─── Unchanged helpers ───────────────────────────────────────────────────────
 const nextStatus = (current: RoadmapStep["status"]): RoadmapStep["status"] => {
   if (current === "not_started") return "in_progress";
   if (current === "in_progress") return "completed";
@@ -36,175 +53,303 @@ const nextStatus = (current: RoadmapStep["status"]): RoadmapStep["status"] => {
 };
 
 const STATUS_STYLE: Record<RoadmapStep["status"], { label: string; bg: string; color: string; border: string }> = {
-  not_started: { label: "Not started",  bg: "transparent",         color: "#6b7280", border: "#2d3748" },
-  in_progress:  { label: "In progress", bg: "rgba(59,130,246,0.08)", color: "#3b82f6", border: "#3b82f6" },
-  completed:    { label: "Done",        bg: "rgba(34,197,94,0.08)", color: "#22c55e", border: "#22c55e" },
+  not_started: { label: "Not started",  bg: "transparent",           color: "#6b7280", border: "#374151" },
+  in_progress:  { label: "In progress", bg: "rgba(234,179,8,0.1)",   color: "#eab308", border: "#eab308" },
+  completed:    { label: "✓ Done",      bg: "rgba(34,197,94,0.1)",   color: "#22c55e", border: "#22c55e" },
 };
 
 function safeParseJson<T>(raw: string): T | null {
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(raw) as T; }
+  catch { return null; }
 }
 
-// ─── Status Dot ──────────────────────────────────────────────────────────────
-function StatusDot({ status }: { status: RoadmapStep["status"] }) {
-  if (status === "completed") {
-    return (
-      <div style={{
-        width: "16px", height: "16px", borderRadius: "50%",
-        background: "#22c55e",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0,
-      }}>
-        <span style={{ color: "#fff", fontSize: "9px", fontWeight: 900, lineHeight: 1 }}>✓</span>
-      </div>
-    );
-  }
-  if (status === "in_progress") {
-    return (
-      <div
-        className="status-dot-progress"
-        style={{
-          width: "10px", height: "10px", borderRadius: "50%",
-          background: "#3b82f6",
-          flexShrink: 0,
-        }}
-      />
-    );
-  }
+// ─── Timeline dot (on the vertical line) ─────────────────────────────────────
+function TimelineDot({ status }: { status: RoadmapStep["status"] }) {
+  const dotColor =
+    status === "completed"   ? "#22c55e" :
+    status === "in_progress" ? "#eab308" :
+    "#111827";
+  const borderColor =
+    status === "completed"   ? "#22c55e" :
+    status === "in_progress" ? "#eab308" :
+    "#374151";
+
   return (
     <div style={{
-      width: "10px", height: "10px", borderRadius: "50%",
-      background: "transparent",
-      border: "2px solid #4b5563",
       flexShrink: 0,
+      width: "1rem", height: "1rem",
+      borderRadius: "50%",
+      background: dotColor,
+      border: `2px solid ${borderColor}`,
+      zIndex: 1,
+      marginTop: "0.65rem",
     }} />
   );
 }
 
-// ─── Pipeline Card ───────────────────────────────────────────────────────────
-function PipelineCard({
+// ─── Note Input (auto-saves after 1.2s of inactivity) ────────────────────────
+function NoteInput({
+  stepId,
+  clientId,
+  initialValue,
+  onSave,
+}: {
+  stepId: string;
+  clientId: string;
+  initialValue: string;
+  onSave: (notes: string) => void;
+}) {
+  const { token } = useAuth();
+  const [value, setValue] = useState(initialValue);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    setSaved(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      if (!token) return;
+      setSaving(true);
+      try {
+        await updateStepNote(token, clientId, stepId, e.target.value);
+        onSave(e.target.value);
+        setSaved(true);
+      } catch {
+        // silent fail — user can retry by typing again
+      } finally {
+        setSaving(false);
+      }
+    }, 1200);
+  };
+
+  return (
+    <div>
+      <textarea
+        value={value}
+        onChange={handleChange}
+        rows={2}
+        placeholder="Add a note for this step (auto-saves)…"
+        style={{
+          width: "100%",
+          padding: "0.55rem 0.75rem",
+          borderRadius: "0.375rem",
+          border: "1px solid #1f2937",
+          backgroundColor: "#0a0f1a",
+          color: "#d1d5db",
+          fontSize: "0.82rem",
+          resize: "vertical",
+          boxSizing: "border-box",
+          lineHeight: 1.5,
+        }}
+      />
+      {(saving || saved) && (
+        <p style={{ margin: "0.25rem 0 0", fontSize: "0.7rem", color: saving ? "#6b7280" : "#22c55e" }}>
+          {saving ? "Saving…" : "✓ Saved"}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Collapsible Action Step Card ─────────────────────────────────────────────
+function ActionStepCard({
   step,
   parsed,
+  clientId,
   onStepUpdate,
+  onNoteUpdate,
 }: {
   step: RoadmapStep;
   parsed: ActionPlanStep;
+  clientId: string;
   onStepUpdate?: Props["onStepUpdate"];
+  onNoteUpdate?: (stepId: string, notes: string) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div
-      style={{
-        background: "#1e293b",
-        border: `1px solid ${STATUS_STYLE[step.status].border}`,
-        borderRadius: "0.5rem",
-        padding: "0.75rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.6rem",
-      }}
-    >
-      {/* Step number + title */}
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
+    <div style={{
+      background: "#0f172a",
+      border: "1px solid #1e293b",
+      borderRadius: "0.75rem",
+      overflow: "hidden",
+    }}>
+      {/* ── Header row (clickable to expand) ── */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(o => !o)}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsOpen(o => !o); }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.75rem",
+          padding: "0.875rem 1.25rem",
+          borderBottom: isOpen ? "1px solid #1e293b" : "none",
+          background: "#111827",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+      >
+        {/* Step number circle */}
         <div style={{
           flexShrink: 0,
-          width: "1.5rem", height: "1.5rem",
+          width: "2rem", height: "2rem",
           borderRadius: "50%",
           background: "#2563eb",
           color: "#fff",
-          fontSize: "0.65rem",
+          fontSize: "0.8rem",
           fontWeight: 700,
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           {parsed.step_number}
         </div>
-        <p style={{ fontWeight: 600, color: "#f9fafb", fontSize: "0.82rem", margin: 0, lineHeight: 1.35 }}>
-          {parsed.action}
-        </p>
+
+        {/* Title + contact */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontWeight: 700, color: "#f9fafb", margin: 0, fontSize: "0.95rem", lineHeight: 1.35 }}>
+            {parsed.action}
+          </p>
+          {parsed.phone && (
+            <p style={{ color: "#60a5fa", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📞 {parsed.phone}</p>
+          )}
+          {parsed.address && (
+            <p style={{ color: "#60a5fa", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📍 {parsed.address}</p>
+          )}
+        </div>
+
+        {/* Status button — stops propagation so it doesn't toggle open */}
+        <button
+          type="button"
+          title="Click to update status"
+          onClick={(e) => { e.stopPropagation(); onStepUpdate?.(step.id, nextStatus(step.status)); }}
+          style={{
+            flexShrink: 0,
+            padding: "0.3rem 0.75rem",
+            borderRadius: "999px",
+            border: `1px solid ${STATUS_STYLE[step.status].border}`,
+            backgroundColor: STATUS_STYLE[step.status].bg,
+            color: STATUS_STYLE[step.status].color,
+            fontSize: "0.72rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {STATUS_STYLE[step.status].label}
+        </button>
+
+        {/* Chevron */}
+        <span style={{
+          flexShrink: 0,
+          color: "#4b5563",
+          fontSize: "0.75rem",
+          transition: "transform 0.2s ease",
+          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          display: "inline-block",
+        }}>
+          ▼
+        </span>
       </div>
 
-      {/* Goal */}
-      {parsed.goal_of_this_step && (
-        <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.78rem", fontStyle: "italic", lineHeight: 1.45 }}>
-          <span style={{ fontStyle: "normal", fontWeight: 600, color: "#6b7280" }}>Goal: </span>
-          {parsed.goal_of_this_step}
-        </p>
-      )}
+      {/* ── Collapsible detail body ── */}
+      <div style={{
+        maxHeight: isOpen ? "1200px" : "0",
+        overflow: "hidden",
+        transition: "max-height 0.25s ease",
+      }}>
+        <div style={{ padding: "1rem 1.25rem", display: "grid", gap: "0.875rem" }}>
 
-      {/* What to do — highlighted box */}
-      {parsed.what_to_ask_for && (
-        <div style={{
-          background: "#1a2744",
-          borderLeft: "3px solid #3b82f6",
-          borderRadius: "0.25rem",
-          padding: "0.5rem 0.75rem",
-        }}>
-          <p style={{ margin: "0 0 0.25rem", fontSize: "0.68rem", fontWeight: 700, color: "#60a5fa", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            What to do:
-          </p>
-          <p style={{ margin: 0, color: "#e2e8f0", fontSize: "0.78rem", lineHeight: 1.5 }}>
-            {parsed.what_to_ask_for}
-          </p>
+          {/* 💬 What to say */}
+          {parsed.what_to_ask_for && (
+            <div style={{ display: "flex", gap: "0.6rem" }}>
+              <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>💬</span>
+              <div>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  What to say or ask for
+                </p>
+                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                  {parsed.what_to_ask_for}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* 🎯 Goal */}
+          {parsed.goal_of_this_step && (
+            <div style={{ display: "flex", gap: "0.6rem" }}>
+              <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>🎯</span>
+              <div>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Goal of this step
+                </p>
+                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                  {parsed.goal_of_this_step}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* 🔗 Why it matters */}
+          {parsed.why_it_matters && (
+            <div style={{
+              display: "flex",
+              gap: "0.6rem",
+              background: "rgba(234,179,8,0.08)",
+              border: "1px solid rgba(234,179,8,0.25)",
+              borderRadius: "0.5rem",
+              padding: "0.75rem",
+            }}>
+              <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>🔗</span>
+              <div>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#ca8a04", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Why this matters for your case
+                </p>
+                <p style={{ margin: 0, color: "#fde68a", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                  {parsed.why_it_matters}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ✅ Expected outcome */}
+          {parsed.expected_outcome && (
+            <div style={{ display: "flex", gap: "0.6rem" }}>
+              <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>✅</span>
+              <div>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  What should happen after
+                </p>
+                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                  {parsed.expected_outcome}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* 📝 Case manager note */}
+          <div style={{ borderTop: "1px solid #1e293b", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
+            <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              📝 Case manager note
+            </p>
+            <NoteInput
+              stepId={step.id}
+              clientId={clientId}
+              initialValue={step.notes ?? ""}
+              onSave={(notes) => onNoteUpdate?.(step.id, notes)}
+            />
+          </div>
+
         </div>
-      )}
-
-      {/* Phone */}
-      {parsed.phone && (
-        <p style={{ margin: 0, color: "#60a5fa", fontSize: "0.75rem", lineHeight: 1.3 }}>
-          📞 {parsed.phone}
-        </p>
-      )}
-
-      {/* Address */}
-      {parsed.address && (
-        <p style={{ margin: 0, color: "#60a5fa", fontSize: "0.75rem", lineHeight: 1.3 }}>
-          📍 {parsed.address}
-        </p>
-      )}
-
-      {/* Why it matters */}
-      {parsed.why_it_matters && (
-        <p style={{ margin: 0, fontSize: "0.73rem", color: "#6b7280", lineHeight: 1.45 }}>
-          <span style={{ fontWeight: 600 }}>Why it matters: </span>
-          {parsed.why_it_matters}
-        </p>
-      )}
-
-      {/* Status pill button */}
-      <button
-        type="button"
-        title="Click to advance status"
-        onClick={() => onStepUpdate?.(step.id, nextStatus(step.status))}
-        style={{
-          alignSelf: "flex-start",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.3rem",
-          padding: "0.25rem 0.625rem",
-          borderRadius: "999px",
-          border: `1px solid ${STATUS_STYLE[step.status].border}`,
-          backgroundColor: STATUS_STYLE[step.status].bg === "transparent"
-            ? "transparent"
-            : STATUS_STYLE[step.status].bg,
-          color: STATUS_STYLE[step.status].color,
-          fontSize: "0.7rem",
-          fontWeight: 600,
-          cursor: "pointer",
-          marginTop: "0.1rem",
-        }}
-      >
-        <StatusDot status={step.status} />
-        {STATUS_STYLE[step.status].label}
-        <span style={{ opacity: 0.6 }}>→</span>
-      </button>
+      </div>
     </div>
   );
 }
 
-// ─── Resource Card ───────────────────────────────────────────────────────────
+// ─── Resource Card ────────────────────────────────────────────────────────────
 function ResourceCard({ step }: { step: RoadmapStep }) {
   const data = safeParseJson<ResourceData>(step.description);
   return (
@@ -232,8 +377,10 @@ function ResourceCard({ step }: { step: RoadmapStep }) {
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
-const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
+// ─── Main Component ───────────────────────────────────────────────────────────
+const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpdate }) => {
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+
   const actionSteps = useMemo(
     () => steps.filter(s => s.stage === "action_step").sort((a, b) => a.order - b.order),
     [steps]
@@ -243,23 +390,30 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
     [steps]
   );
 
-  // Group action steps by parsed.stage, preserving order of first appearance
-  const stageGroups = useMemo(() => {
+  // Group action steps into phases by step_number
+  const phaseGroups = useMemo(() => {
     const groups = new Map<string, Array<{ step: RoadmapStep; parsed: ActionPlanStep }>>();
-    const fallbacks: Array<{ step: RoadmapStep }> = [];
 
     for (const step of actionSteps) {
       const parsed = safeParseJson<ActionPlanStep>(step.description);
-      if (parsed && typeof parsed.action === "string") {
-        const stageName = parsed.stage || "Action Steps";
-        if (!groups.has(stageName)) groups.set(stageName, []);
-        groups.get(stageName)!.push({ step, parsed });
-      } else {
-        fallbacks.push({ step });
-      }
+      if (!parsed || typeof parsed.action !== "string") continue;
+      const label = getPhaseLabel(parsed.step_number);
+      if (!groups.has(label)) groups.set(label, []);
+      groups.get(label)!.push({ step, parsed });
     }
 
-    return { groups: Array.from(groups.entries()), fallbacks };
+    // Return in fixed phase order, skip empty phases
+    return PHASES
+      .map(p => ({ label: p.label, items: groups.get(p.label) ?? [] }))
+      .filter(g => g.items.length > 0);
+  }, [actionSteps]);
+
+  // Fallback non-JSON steps
+  const fallbackSteps = useMemo(() => {
+    return actionSteps.filter(step => {
+      const parsed = safeParseJson<ActionPlanStep>(step.description);
+      return !parsed || typeof parsed.action !== "string";
+    });
   }, [actionSteps]);
 
   if (steps.length === 0) {
@@ -271,17 +425,11 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
   const pct = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   return (
-    <section aria-label="Housing readiness roadmap">
-      {/* Pulse animation for in-progress dots */}
-      <style>{`
-        @keyframes pulse-blue {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.55; transform: scale(1.25); }
-        }
-        .status-dot-progress { animation: pulse-blue 1.4s ease-in-out infinite; }
-      `}</style>
-
-      {/* Final Goal banner */}
+    <section
+      aria-label="Housing readiness roadmap"
+      style={{ width: "100%", maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem", boxSizing: "border-box" }}
+    >
+      {/* 1. Final Goal banner */}
       {planMeta.finalGoal && (
         <div style={{
           background: "#eff6ff",
@@ -305,14 +453,25 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
         </div>
       )}
 
-      {/* Summary banner */}
+      {/* 2. Progress bar */}
+      <div style={{ marginBottom: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#9ca3af", marginBottom: "0.4rem" }}>
+          <span>Progress</span>
+          <span>{completedSteps} of {totalSteps} steps completed ({pct}%)</span>
+        </div>
+        <div style={{ height: "6px", borderRadius: "999px", backgroundColor: "#1f2937", overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pct}%`, backgroundColor: "#22c55e", borderRadius: "999px", transition: "width 0.3s ease" }} />
+        </div>
+      </div>
+
+      {/* 3. Summary banner */}
       {planMeta.summary && (
         <div style={{
           background: "#f0fdf4",
           border: "1.5px solid #bbf7d0",
           borderRadius: "0.75rem",
           padding: "1rem 1.25rem",
-          marginBottom: "1.5rem",
+          marginBottom: "2rem",
         }}>
           <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#15803d", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             Why this plan works for your situation
@@ -323,82 +482,70 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
         </div>
       )}
 
-      {/* Progress bar */}
-      <div style={{ marginBottom: "1.75rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#9ca3af", marginBottom: "0.4rem" }}>
-          <span>Progress</span>
-          <span>{completedSteps} of {totalSteps} steps completed ({pct}%)</span>
-        </div>
-        <div style={{ height: "6px", borderRadius: "999px", backgroundColor: "#1f2937", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${pct}%`, backgroundColor: "#22c55e", borderRadius: "999px", transition: "width 0.3s ease" }} />
-        </div>
-      </div>
+      {/* 4. Vertical timeline */}
+      {phaseGroups.map(({ label, items }) => (
+        <div key={label} style={{ marginBottom: "2rem" }}>
+          {/* Phase label */}
+          <p style={{
+            margin: "0 0 0.75rem",
+            paddingLeft: "2rem",
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            color: "#6b7280",
+            textTransform: "uppercase",
+            letterSpacing: "0.07em",
+          }}>
+            {label}
+          </p>
 
-      {/* Stage sections */}
-      {stageGroups.groups.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          {stageGroups.groups.map(([stageName, items]) => {
-            const colCompleted = items.filter(i => i.step.status === "completed").length;
-            return (
-              <div key={stageName}>
-                {/* Stage header */}
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                  paddingBottom: "0.5rem",
-                  borderBottom: "1px solid #1e293b",
-                  marginBottom: "0.75rem",
-                }}>
-                  <span style={{
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    color: "#60a5fa",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.07em",
-                  }}>
-                    {stageName}
-                  </span>
-                  <span style={{ fontSize: "0.7rem", color: "#4b5563" }}>
-                    {colCompleted}/{items.length} done
-                  </span>
-                </div>
+          {/* Steps with vertical line */}
+          <div style={{ position: "relative" }}>
+            {/* Vertical connecting line */}
+            <div style={{
+              position: "absolute",
+              left: "0.9rem",
+              top: 0,
+              bottom: 0,
+              width: "2px",
+              background: "#1e293b",
+              zIndex: 0,
+            }} />
 
-                {/* 2-column grid of cards */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
-                  gap: "0.75rem",
-                }}>
-                  {items.map(({ step, parsed }) => (
-                    <PipelineCard
-                      key={step.id}
-                      step={step}
-                      parsed={parsed}
-                      onStepUpdate={onStepUpdate}
-                    />
-                  ))}
+            {items.map(({ step, parsed }) => (
+              <div key={step.id} style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "1rem",
+                marginBottom: "1rem",
+                position: "relative",
+              }}>
+                <TimelineDot status={step.status} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <ActionStepCard
+                    step={step}
+                    parsed={parsed}
+                    clientId={clientId}
+                    onStepUpdate={onStepUpdate}
+                    onNoteUpdate={() => {}}
+                  />
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      )}
+      ))}
 
       {/* Fallback for non-JSON steps */}
-      {stageGroups.fallbacks.length > 0 && (
-        <div style={{ marginTop: "1rem" }}>
-          {stageGroups.fallbacks.map(({ step }) => (
-            <div
-              key={step.id}
-              style={{
-                padding: "0.875rem 1.25rem",
-                background: "#0f172a",
-                border: "1px solid #1e293b",
-                borderRadius: "0.75rem",
-                marginBottom: "0.75rem",
-              }}
-            >
+      {fallbackSteps.length > 0 && (
+        <div style={{ marginBottom: "2rem" }}>
+          {fallbackSteps.map((step) => (
+            <div key={step.id} style={{
+              padding: "0.875rem 1.25rem",
+              background: "#0f172a",
+              border: "1px solid #1e293b",
+              borderRadius: "0.75rem",
+              marginBottom: "0.75rem",
+            }}>
               <p style={{ fontWeight: 700, color: "#f9fafb", margin: "0 0 0.25rem" }}>{step.title}</p>
               <p style={{ color: "#9ca3af", margin: 0, fontSize: "0.875rem" }}>{step.description}</p>
             </div>
@@ -406,17 +553,51 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, onStepUpdate }) => {
         </div>
       )}
 
-      {/* Resources */}
+      {/* 5. Resources — collapsible */}
       {resourceSteps.length > 0 && (
-        <section style={{ marginTop: "2rem" }}>
-          <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "1rem" }}>
-            📞 Key NJ Contacts
-          </p>
-          <ol style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {resourceSteps.map((step) => (
-              <ResourceCard key={step.id} step={step} />
-            ))}
-          </ol>
+        <section style={{ marginTop: "1rem" }}>
+          <button
+            type="button"
+            onClick={() => setIsResourcesOpen(o => !o)}
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "none",
+              border: "1px solid #1e293b",
+              borderRadius: isResourcesOpen ? "0.5rem 0.5rem 0 0" : "0.5rem",
+              padding: "0.75rem 1rem",
+              cursor: "pointer",
+              color: "#9ca3af",
+              fontSize: "0.8rem",
+              fontWeight: 600,
+            }}
+          >
+            <span>📞 Key NJ Contacts (tap to expand)</span>
+            <span style={{
+              fontSize: "0.7rem",
+              transition: "transform 0.2s ease",
+              transform: isResourcesOpen ? "rotate(180deg)" : "rotate(0deg)",
+              display: "inline-block",
+            }}>▼</span>
+          </button>
+
+          <div style={{
+            maxHeight: isResourcesOpen ? "2000px" : "0",
+            overflow: "hidden",
+            transition: "max-height 0.3s ease",
+            border: isResourcesOpen ? "1px solid #1e293b" : "none",
+            borderTop: "none",
+            borderRadius: "0 0 0.5rem 0.5rem",
+            padding: isResourcesOpen ? "0.75rem" : "0",
+          }}>
+            <ol style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {resourceSteps.map((step) => (
+                <ResourceCard key={step.id} step={step} />
+              ))}
+            </ol>
+          </div>
         </section>
       )}
     </section>

@@ -59,6 +59,7 @@ export const initDb = () => {
     // Migrate existing DBs that don't yet have these columns (errors silently ignored)
     db.run(`ALTER TABLE roadmaps ADD COLUMN finalGoal TEXT NOT NULL DEFAULT ''`, () => {});
     db.run(`ALTER TABLE roadmaps ADD COLUMN summary TEXT NOT NULL DEFAULT ''`, () => {});
+    db.run(`ALTER TABLE roadmapSteps ADD COLUMN notes TEXT DEFAULT ''`, () => {});
 
     db.run(`
       CREATE TABLE IF NOT EXISTS roadmapSteps (

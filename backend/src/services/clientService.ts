@@ -89,6 +89,8 @@ export interface ClientListItem {
   name: string;
   priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
   case_status: CaseStatus;
+  roadmapStepsTotal: number;
+  roadmapStepsCompleted: number;
   createdAt: string;
 }
 
@@ -100,6 +102,8 @@ interface ClientListRow {
   specialCircumstance: string;
   case_status: string;
   createdAt: string;
+  roadmapStepsTotal: number;
+  roadmapStepsCompleted: number;
 }
 
 export const listClientsForCaseManager = (
@@ -108,10 +112,21 @@ export const listClientsForCaseManager = (
   return new Promise<ClientListItem[]>((resolve, reject) => {
     db.all<ClientListRow>(
       `
-        SELECT id, name, documentStatus, specialCircumstance, case_status, createdAt
-        FROM clients
-        WHERE caseManagerId = ?
-        ORDER BY createdAt DESC
+        SELECT
+          c.id, c.name, c.documentStatus, c.specialCircumstance, c.case_status, c.createdAt,
+          COALESCE((
+            SELECT COUNT(*) FROM roadmapSteps rs
+            JOIN roadmaps r ON rs.roadmapId = r.id
+            WHERE r.clientId = c.id AND rs.stage = 'action_step'
+          ), 0) AS roadmapStepsTotal,
+          COALESCE((
+            SELECT COUNT(*) FROM roadmapSteps rs
+            JOIN roadmaps r ON rs.roadmapId = r.id
+            WHERE r.clientId = c.id AND rs.stage = 'action_step' AND rs.status = 'completed'
+          ), 0) AS roadmapStepsCompleted
+        FROM clients c
+        WHERE c.caseManagerId = ?
+        ORDER BY c.createdAt DESC
       `,
       [caseManagerId],
       (err, rows) => {
@@ -139,7 +154,9 @@ export const listClientsForCaseManager = (
             name: row.name,
             priority: derivePriority(row.documentStatus),
             case_status: (row.case_status as CaseStatus) ?? "Active",
-            createdAt: row.createdAt
+            createdAt: row.createdAt,
+            roadmapStepsTotal: row.roadmapStepsTotal ?? 0,
+            roadmapStepsCompleted: row.roadmapStepsCompleted ?? 0,
           }))
         );
       }

@@ -26,6 +26,7 @@ export type RoadmapStep = {
   description: string;
   status: "not_started" | "in_progress" | "completed";
   order: number;
+  notes?: string;
 };
 
 export type CaseStatus = "Active" | "Placed" | "On Hold" | "Closed";
@@ -36,6 +37,8 @@ export type ClientSummary = {
   priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
   case_status: CaseStatus;
   createdAt: string;
+  roadmapStepsTotal?: number;
+  roadmapStepsCompleted?: number;
 };
 
 export type ClientDetail = {
@@ -179,6 +182,18 @@ export const deleteClient = async (token: string, clientId: string) =>
     `/api/clients/${encodeURIComponent(clientId)}`,
     { method: "DELETE", token }
   );
+
+export const updateStepNote = async (
+  token: string,
+  clientId: string,
+  stepId: string,
+  notes: string
+): Promise<void> => {
+  await apiRequest<{ success: boolean }>(
+    `/api/clients/${encodeURIComponent(clientId)}/roadmap/steps/${encodeURIComponent(stepId)}/notes`,
+    { method: "PATCH", token, body: { notes } }
+  );
+};
 
 export const updateClientCaseStatus = async (
   token: string,
