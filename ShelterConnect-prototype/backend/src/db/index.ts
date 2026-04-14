@@ -1,11 +1,18 @@
 import sqlite3 from "sqlite3";
 import path from "path";
+import fs from "fs";
 
 sqlite3.verbose();
 
 const dbFile =
   process.env.DATABASE_URL ||
   path.join(__dirname, "..", "..", "data", "housing-readiness.db");
+
+// Ensure the data directory exists (required on platforms like Render)
+const dbDir = path.dirname(dbFile);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
 
 export const db = new sqlite3.Database(dbFile);
 
