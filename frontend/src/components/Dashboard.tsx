@@ -10,19 +10,19 @@ import {
 } from "../api/clientApi";
 
 // ─── Priority badge config ───────────────────────────────────────────────────
-const PRIORITY_BADGE: Record<string, { emoji: string; label: string; color: string }> = {
-  CRITICAL: { emoji: "🔴", label: "CRITICAL", color: "#dc2626" },
-  HIGH:     { emoji: "🟠", label: "HIGH",     color: "#ea580c" },
-  MEDIUM:   { emoji: "🟡", label: "MEDIUM",   color: "#ca8a04" },
-  LOW:      { emoji: "🟢", label: "LOW",       color: "#16a34a" },
+const PRIORITY_BADGE: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
+  CRITICAL: { emoji: "🔴", label: "CRITICAL", color: "#C0391B", bg: "#FEF0EE" },
+  HIGH:     { emoji: "🟠", label: "HIGH",     color: "#C06A1B", bg: "#FFF4E8" },
+  MEDIUM:   { emoji: "🟡", label: "MEDIUM",   color: "#9A7A10", bg: "#FFFBE8" },
+  LOW:      { emoji: "🟢", label: "LOW",       color: "#1A8C63", bg: "#EAF7F2" },
 };
 
 // ─── Case status badge config ─────────────────────────────────────────────────
 const STATUS_BADGE: Record<CaseStatus, { bg: string; color: string; border: string }> = {
-  "Active":  { bg: "#dbeafe", color: "#1d4ed8", border: "#93c5fd" },
-  "Placed":  { bg: "#dcfce7", color: "#15803d", border: "#86efac" },
-  "On Hold": { bg: "#fef9c3", color: "#a16207", border: "#fde047" },
-  "Closed":  { bg: "#f3f4f6", color: "#4b5563", border: "#d1d5db" },
+  "Active":  { bg: "#EAF7F2", color: "#1A8C63", border: "#9FE1CB" },
+  "Placed":  { bg: "#EBF5FF", color: "#1A7FD4", border: "#B5D4F4" },
+  "On Hold": { bg: "#FFFBE8", color: "#9A7A10", border: "#F0E68C" },
+  "Closed":  { bg: "#F4F6F8", color: "#6B8BAE", border: "#DDEAF7" },
 };
 
 const ALL_STATUSES: CaseStatus[] = ["Active", "Placed", "On Hold", "Closed"];
@@ -97,12 +97,12 @@ function StatusDropdown({
           top: "calc(100% + 4px)",
           left: 0,
           zIndex: 50,
-          background: "#1f2937",
-          border: "1px solid #374151",
+          background: "#FFFFFF",
+          border: "1px solid #DDEAF7",
           borderRadius: "0.5rem",
           overflow: "hidden",
           minWidth: "110px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+          boxShadow: "0 4px 12px rgba(26,127,212,0.12)",
         }}>
           {ALL_STATUSES.map((s) => {
             const b = STATUS_BADGE[s];
@@ -116,7 +116,7 @@ function StatusDropdown({
                   width: "100%",
                   padding: "0.5rem 0.75rem",
                   textAlign: "left",
-                  background: s === current ? "#374151" : "transparent",
+                  background: s === current ? b.bg : "transparent",
                   border: "none",
                   cursor: "pointer",
                   fontSize: "0.8rem",
@@ -173,19 +173,19 @@ function DeleteModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: "#111827",
-          border: "1px solid #374151",
+          background: "#FFFFFF",
+          border: "1px solid #DDEAF7",
           borderRadius: "1rem",
           padding: "2rem",
           maxWidth: "420px",
           width: "100%",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.7)",
+          boxShadow: "0 24px 80px rgba(26,127,212,0.15)",
         }}
       >
-        <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.1rem", color: "#f9fafb" }}>
+        <h2 style={{ margin: "0 0 0.75rem", fontSize: "1.1rem", color: "#0D1F3C" }}>
           Delete {client.name}&rsquo;s case?
         </h2>
-        <p style={{ margin: "0 0 1.5rem", fontSize: "0.9rem", color: "#9ca3af", lineHeight: 1.6 }}>
+        <p style={{ margin: "0 0 1.5rem", fontSize: "0.9rem", color: "#6B8BAE", lineHeight: 1.6 }}>
           This will permanently remove their intake data, roadmap, documents, and case notes.
           This cannot be undone.
         </p>
@@ -212,9 +212,9 @@ function DeleteModal({
             style={{
               padding: "0.55rem 1.25rem",
               borderRadius: "999px",
-              border: "1px solid #374151",
+              border: "1px solid #DDEAF7",
               background: "transparent",
-              color: "#9ca3af",
+              color: "#6B8BAE",
               fontSize: "0.875rem",
               cursor: deleting ? "not-allowed" : "pointer",
             }}
@@ -268,7 +268,7 @@ const Dashboard: React.FC = () => {
         setClients(data.clients);
       } catch (err) {
         if (!isMounted) return;
-        setError(err instanceof Error ? err.message : "Unable to load clients right now.");
+        setError(err instanceof Error ? err.message : "Unable to load individuals right now.");
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -297,19 +297,45 @@ const Dashboard: React.FC = () => {
   const FILTER_OPTIONS: Array<CaseStatus | "All"> = ["All", "Active", "Placed", "On Hold", "Closed"];
 
   return (
-    <section aria-label="Client dashboard">
+    <section aria-label="Individual dashboard">
       <div className="page__actions">
         <button
           type="button"
           className="button button--primary"
           onClick={() => navigate("/intake")}
         >
-          New client intake
+          New individual intake
         </button>
       </div>
 
-      {isLoading && <p role="status" aria-live="polite">Loading clients…</p>}
+      {isLoading && <p role="status" aria-live="polite">Loading individuals…</p>}
       {error && <div className="alert alert--error" role="alert">{error}</div>}
+
+      {!isLoading && !error && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+          {[
+            { label: "Total Individuals", value: clients.length, color: "#1A7FD4" },
+            { label: "Active",        value: clients.filter(c => c.case_status === "Active").length, color: "#1A7FD4" },
+            { label: "Placed",        value: clients.filter(c => c.case_status === "Placed").length, color: "#2DBD8F" },
+            { label: "Critical",      value: clients.filter(c => c.priority === "CRITICAL").length,  color: "#C0391B" },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{
+              background: "#FFFFFF",
+              border: "1px solid #DDEAF7",
+              borderRadius: "16px",
+              padding: "1.25rem 1.5rem",
+              boxShadow: "0 2px 8px rgba(26,127,212,0.06)",
+            }}>
+              <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem", fontWeight: 700, color: "#6B8BAE", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                {label}
+              </p>
+              <p style={{ margin: 0, fontSize: "1.75rem", fontWeight: 800, color }}>
+                {value}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {!isLoading && !error && (
         <>
@@ -330,14 +356,14 @@ const Dashboard: React.FC = () => {
                     padding: "0.35rem 0.875rem",
                     borderRadius: "999px",
                     border: isActive
-                      ? `1.5px solid ${badge?.border ?? "#6b7280"}`
-                      : "1.5px solid #374151",
+                      ? `1.5px solid ${badge?.border ?? "#DDEAF7"}`
+                      : "1.5px solid #DDEAF7",
                     background: isActive
-                      ? (badge?.bg ?? "#374151")
+                      ? (badge?.bg ?? "#EBF5FF")
                       : "transparent",
                     color: isActive
-                      ? (badge?.color ?? "#f9fafb")
-                      : "#9ca3af",
+                      ? (badge?.color ?? "#1A7FD4")
+                      : "#6B8BAE",
                     fontSize: "0.8rem",
                     fontWeight: isActive ? 700 : 400,
                     cursor: "pointer",
@@ -350,13 +376,13 @@ const Dashboard: React.FC = () => {
           </div>
 
           {filtered.length === 0 ? (
-            <p style={{ color: "#6b7280" }}>
-              No {filter !== "All" ? filter.toLowerCase() : ""} clients.
+            <p style={{ color: "#6B8BAE" }}>
+              No {filter !== "All" ? filter.toLowerCase() : ""} individuals.
             </p>
           ) : (
             <div className="table-wrapper">
               <table className="table">
-                <caption className="sr-only">Client list</caption>
+                <caption className="sr-only">Individual list</caption>
                 <thead>
                   <tr>
                     <th scope="col">Name</th>
@@ -390,13 +416,13 @@ const Dashboard: React.FC = () => {
                             const total = client.roadmapStepsTotal ?? 0;
                             const done = client.roadmapStepsCompleted ?? 0;
                             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-                            const color = pct === 100 ? "#22c55e" : pct > 0 ? "#38bdf8" : "#374151";
+                            const color = pct === 100 ? "#2DBD8F" : pct > 0 ? "#1A7FD4" : "#DDEAF7";
                             return (
                               <div style={{ minWidth: "100px" }}>
                                 <div style={{
                                   height: "5px",
                                   borderRadius: "999px",
-                                  backgroundColor: "#1f2937",
+                                  backgroundColor: "#EBF5FF",
                                   overflow: "hidden",
                                   marginBottom: "0.3rem"
                                 }}>
@@ -408,7 +434,7 @@ const Dashboard: React.FC = () => {
                                     transition: "width 0.3s ease"
                                   }} />
                                 </div>
-                                <span style={{ fontSize: "0.72rem", color: "#6b7280" }}>
+                                <span style={{ fontSize: "0.72rem", color: "#6B8BAE" }}>
                                   {total === 0 ? "No roadmap yet" : `${done} of ${total} steps`}
                                 </span>
                               </div>
@@ -437,7 +463,7 @@ const Dashboard: React.FC = () => {
                               cursor: "pointer",
                               fontSize: "1rem",
                               lineHeight: 1,
-                              color: "#6b7280",
+                              color: "#6B8BAE",
                               padding: "0.1rem 0.25rem",
                               borderRadius: "0.25rem",
                               transition: "color 150ms",

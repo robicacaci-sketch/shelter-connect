@@ -29,40 +29,40 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem"
-      }}
-    >
+    <div style={{ maxWidth: "400px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+        <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.3rem", fontWeight: 700, color: "#0D1F3C" }}>
+          Welcome to Pathfinder
+        </h2>
+        <p style={{ margin: 0, fontSize: "0.875rem", color: "#6B8BAE" }}>your path home</p>
+      </div>
+
       <button
         type="button"
         onClick={handleLogin}
         disabled={submitting}
         style={{
-          padding: "0.75rem 1rem",
-          fontSize: "1rem",
-          borderRadius: "0.5rem",
+          padding: "0.8rem 1rem",
+          fontSize: "0.95rem",
+          borderRadius: "10px",
           border: "none",
-          cursor: "pointer",
-          backgroundColor: "#2563eb",
-          color: "white"
+          cursor: submitting ? "not-allowed" : "pointer",
+          backgroundColor: "#1A7FD4",
+          color: "white",
+          fontWeight: 600,
+          boxShadow: "0 4px 14px rgba(26,127,212,0.3)",
+          opacity: submitting ? 0.7 : 1,
         }}
         aria-label="Continue with demo account"
       >
-        {submitting ? "Signing in..." : "Continue with Demo Account"}
+        {submitting ? "Signing in…" : "Continue with Demo Account"}
       </button>
+
       {error && (
-        <p style={{ color: "#b91c1c" }} role="alert">
-          {error}
-        </p>
+        <p style={{ color: "#C0391B", fontSize: "0.875rem", margin: 0 }} role="alert">{error}</p>
       )}
-      <p style={{ fontSize: "0.875rem", color: "#4b5563" }}>
-        This MVP uses a demo OAuth flow. In production, this button would
-        redirect to a real identity provider (e.g., Google or Auth0).
+      <p style={{ fontSize: "0.8rem", color: "#6B8BAE", margin: 0, lineHeight: 1.5 }}>
+        This MVP uses a demo OAuth flow. In production, this button would redirect to a real identity provider.
       </p>
     </div>
   );

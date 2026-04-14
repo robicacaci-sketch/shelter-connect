@@ -132,7 +132,7 @@ const RoadmapPage: React.FC = () => {
   if (!client) {
     return (
       <main className="page page--center" role="main">
-        <p>Client not found.</p>
+        <p>Individual not found.</p>
       </main>
     );
   }
@@ -144,9 +144,9 @@ const RoadmapPage: React.FC = () => {
           type="button"
           onClick={() => navigate("/")}
           style={{
-            border: "1px solid #1f2937",
+            border: "1px solid #DDEAF7",
             background: "transparent",
-            color: "#9ca3af",
+            color: "#6B8BAE",
             borderRadius: "0.375rem",
             padding: "0.45rem 1rem",
             fontSize: "0.85rem",
@@ -179,9 +179,9 @@ const RoadmapPage: React.FC = () => {
             style={{
               padding: "0.5rem 1.1rem",
               borderRadius: "0.375rem",
-              border: "1px solid #374151",
+              border: "1px solid #DDEAF7",
               backgroundColor: "transparent",
-              color: "#9ca3af",
+              color: "#6B8BAE",
               fontSize: "0.85rem",
               fontWeight: 600,
               cursor: "pointer",
@@ -190,7 +190,7 @@ const RoadmapPage: React.FC = () => {
               gap: "0.4rem",
             }}
           >
-            🖨 Print for client
+            🖨 Print for individual
           </button>
         </div>
       </header>

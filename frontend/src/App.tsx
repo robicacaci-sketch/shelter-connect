@@ -6,10 +6,13 @@ import LoginPage from "./routes/LoginPage";
 import IntakePage from "./routes/IntakePage";
 import RoadmapPage from "./routes/RoadmapPage";
 import DashboardPage from "./routes/DashboardPage";
+import Navbar from "./components/Navbar";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
+      <>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
@@ -39,6 +42,7 @@ const App: React.FC = () => {
         />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
+      </>
     </AuthProvider>
   );
 };

@@ -53,9 +53,9 @@ const nextStatus = (current: RoadmapStep["status"]): RoadmapStep["status"] => {
 };
 
 const STATUS_STYLE: Record<RoadmapStep["status"], { label: string; bg: string; color: string; border: string }> = {
-  not_started: { label: "Not started",  bg: "transparent",           color: "#6b7280", border: "#374151" },
-  in_progress:  { label: "In progress", bg: "rgba(234,179,8,0.1)",   color: "#eab308", border: "#eab308" },
-  completed:    { label: "✓ Done",      bg: "rgba(34,197,94,0.1)",   color: "#22c55e", border: "#22c55e" },
+  not_started: { label: "Not started",  bg: "transparent",   color: "#6B8BAE", border: "#DDEAF7" },
+  in_progress:  { label: "In progress", bg: "#EBF5FF",       color: "#1A7FD4", border: "#1A7FD4" },
+  completed:    { label: "✓ Done",      bg: "#EAF7F2",       color: "#2DBD8F", border: "#2DBD8F" },
 };
 
 function safeParseJson<T>(raw: string): T | null {
@@ -66,13 +66,13 @@ function safeParseJson<T>(raw: string): T | null {
 // ─── Timeline dot (on the vertical line) ─────────────────────────────────────
 function TimelineDot({ status }: { status: RoadmapStep["status"] }) {
   const dotColor =
-    status === "completed"   ? "#22c55e" :
-    status === "in_progress" ? "#eab308" :
-    "#111827";
+    status === "completed"   ? "#2DBD8F" :
+    status === "in_progress" ? "#1A7FD4" :
+    "#F4F9FF";
   const borderColor =
-    status === "completed"   ? "#22c55e" :
-    status === "in_progress" ? "#eab308" :
-    "#374151";
+    status === "completed"   ? "#2DBD8F" :
+    status === "in_progress" ? "#1A7FD4" :
+    "#DDEAF7";
 
   return (
     <div style={{
@@ -135,9 +135,9 @@ function NoteInput({
           width: "100%",
           padding: "0.55rem 0.75rem",
           borderRadius: "0.375rem",
-          border: "1px solid #1f2937",
-          backgroundColor: "#0a0f1a",
-          color: "#d1d5db",
+          border: "1.5px solid #DDEAF7",
+          backgroundColor: "#F4F9FF",
+          color: "#0D1F3C",
           fontSize: "0.82rem",
           resize: "vertical",
           boxSizing: "border-box",
@@ -145,7 +145,7 @@ function NoteInput({
         }}
       />
       {(saving || saved) && (
-        <p style={{ margin: "0.25rem 0 0", fontSize: "0.7rem", color: saving ? "#6b7280" : "#22c55e" }}>
+        <p style={{ margin: "0.25rem 0 0", fontSize: "0.7rem", color: saving ? "#6B8BAE" : "#2DBD8F" }}>
           {saving ? "Saving…" : "✓ Saved"}
         </p>
       )}
@@ -171,8 +171,8 @@ function ActionStepCard({
 
   return (
     <div style={{
-      background: "#0f172a",
-      border: "1px solid #1e293b",
+      background: "#FFFFFF",
+      border: "1px solid #DDEAF7",
       borderRadius: "0.75rem",
       overflow: "hidden",
     }}>
@@ -188,8 +188,8 @@ function ActionStepCard({
           alignItems: "center",
           gap: "0.75rem",
           padding: "0.875rem 1.25rem",
-          borderBottom: isOpen ? "1px solid #1e293b" : "none",
-          background: "#111827",
+          borderBottom: isOpen ? "1px solid #DDEAF7" : "none",
+          background: "#F4F9FF",
           cursor: "pointer",
           userSelect: "none",
         }}
@@ -199,7 +199,7 @@ function ActionStepCard({
           flexShrink: 0,
           width: "2rem", height: "2rem",
           borderRadius: "50%",
-          background: "#2563eb",
+          background: "#1A7FD4",
           color: "#fff",
           fontSize: "0.8rem",
           fontWeight: 700,
@@ -210,14 +210,14 @@ function ActionStepCard({
 
         {/* Title + contact */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontWeight: 700, color: "#f9fafb", margin: 0, fontSize: "0.95rem", lineHeight: 1.35 }}>
+          <p style={{ fontWeight: 700, color: "#0D1F3C", margin: 0, fontSize: "0.95rem", lineHeight: 1.35 }}>
             {parsed.action}
           </p>
           {parsed.phone && (
-            <p style={{ color: "#60a5fa", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📞 {parsed.phone}</p>
+            <p style={{ color: "#1A7FD4", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📞 {parsed.phone}</p>
           )}
           {parsed.address && (
-            <p style={{ color: "#60a5fa", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📍 {parsed.address}</p>
+            <p style={{ color: "#1A7FD4", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>📍 {parsed.address}</p>
           )}
         </div>
 
@@ -245,7 +245,7 @@ function ActionStepCard({
         {/* Chevron */}
         <span style={{
           flexShrink: 0,
-          color: "#4b5563",
+          color: "#6B8BAE",
           fontSize: "0.75rem",
           transition: "transform 0.2s ease",
           transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
@@ -268,10 +268,10 @@ function ActionStepCard({
             <div style={{ display: "flex", gap: "0.6rem" }}>
               <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>💬</span>
               <div>
-                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6B8BAE", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   What to say or ask for
                 </p>
-                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, color: "#0D1F3C", fontSize: "0.875rem", lineHeight: 1.5 }}>
                   {parsed.what_to_ask_for}
                 </p>
               </div>
@@ -283,10 +283,10 @@ function ActionStepCard({
             <div style={{ display: "flex", gap: "0.6rem" }}>
               <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>🎯</span>
               <div>
-                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6B8BAE", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Goal of this step
                 </p>
-                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, color: "#0D1F3C", fontSize: "0.875rem", lineHeight: 1.5 }}>
                   {parsed.goal_of_this_step}
                 </p>
               </div>
@@ -298,17 +298,17 @@ function ActionStepCard({
             <div style={{
               display: "flex",
               gap: "0.6rem",
-              background: "rgba(234,179,8,0.08)",
-              border: "1px solid rgba(234,179,8,0.25)",
+              background: "#EAF7F2",
+              border: "1px solid #9FE1CB",
               borderRadius: "0.5rem",
               padding: "0.75rem",
             }}>
               <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>🔗</span>
               <div>
-                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#ca8a04", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#2DBD8F", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Why this matters for your case
                 </p>
-                <p style={{ margin: 0, color: "#fde68a", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, color: "#0D1F3C", fontSize: "0.875rem", lineHeight: 1.5 }}>
                   {parsed.why_it_matters}
                 </p>
               </div>
@@ -320,10 +320,10 @@ function ActionStepCard({
             <div style={{ display: "flex", gap: "0.6rem" }}>
               <span style={{ fontSize: "1.1rem", lineHeight: 1.4 }}>✅</span>
               <div>
-                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#6B8BAE", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   What should happen after
                 </p>
-                <p style={{ margin: 0, color: "#d1d5db", fontSize: "0.875rem", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, color: "#0D1F3C", fontSize: "0.875rem", lineHeight: 1.5 }}>
                   {parsed.expected_outcome}
                 </p>
               </div>
@@ -331,8 +331,8 @@ function ActionStepCard({
           )}
 
           {/* 📝 Case manager note */}
-          <div style={{ borderTop: "1px solid #1e293b", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
-            <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <div style={{ borderTop: "1px solid #DDEAF7", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
+            <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, color: "#6B8BAE", textTransform: "uppercase", letterSpacing: "0.06em" }}>
               📝 Case manager note
             </p>
             <NoteInput
@@ -355,23 +355,23 @@ function ResourceCard({ step }: { step: RoadmapStep }) {
   return (
     <li style={{
       padding: "0.75rem 1rem",
-      background: "#0f172a",
-      border: "1px solid #1e293b",
+      background: "#FFFFFF",
+      border: "1px solid #DDEAF7",
       borderRadius: "0.5rem",
       marginBottom: "0.5rem",
     }}>
-      <p style={{ fontWeight: 600, color: "#f9fafb", margin: "0 0 0.25rem", fontSize: "0.875rem" }}>
+      <p style={{ fontWeight: 600, color: "#0D1F3C", margin: "0 0 0.25rem", fontSize: "0.875rem" }}>
         {step.title}
       </p>
       {data ? (
-        <div style={{ fontSize: "0.8rem", color: "#9ca3af", lineHeight: 1.6 }}>
+        <div style={{ fontSize: "0.8rem", color: "#6B8BAE", lineHeight: 1.6 }}>
           {data.description && <span>{data.description}</span>}
-          {data.phone && <span style={{ display: "block", color: "#60a5fa" }}>📞 {data.phone}</span>}
+          {data.phone && <span style={{ display: "block", color: "#1A7FD4" }}>📞 {data.phone}</span>}
           {data.cost && data.cost !== "Free" && <span style={{ display: "block" }}>Cost: {data.cost}</span>}
           {data.coverageArea && <span style={{ display: "block" }}>Area: {data.coverageArea}</span>}
         </div>
       ) : (
-        <p style={{ fontSize: "0.8rem", color: "#9ca3af", margin: 0 }}>{step.description}</p>
+        <p style={{ fontSize: "0.8rem", color: "#6B8BAE", margin: 0 }}>{step.description}</p>
       )}
     </li>
   );
@@ -417,7 +417,7 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
   }, [actionSteps]);
 
   if (steps.length === 0) {
-    return <p style={{ color: "#6b7280" }}>No roadmap steps available yet.</p>;
+    return <p style={{ color: "#6B8BAE" }}>No roadmap steps available yet.</p>;
   }
 
   const totalSteps = actionSteps.length;
@@ -443,7 +443,7 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
         }}>
           <span style={{ fontSize: "1.2rem", lineHeight: 1.3 }}>🏁</span>
           <div>
-            <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <p style={{ margin: "0 0 0.2rem", fontSize: "0.7rem", fontWeight: 700, color: "#1A7FD4", textTransform: "uppercase", letterSpacing: "0.06em" }}>
               Final Goal
             </p>
             <p style={{ margin: 0, color: "#1e3a8a", fontSize: "0.9rem", fontWeight: 500, lineHeight: 1.5 }}>
@@ -455,12 +455,12 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
 
       {/* 2. Progress bar */}
       <div style={{ marginBottom: "1rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#9ca3af", marginBottom: "0.4rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#6B8BAE", marginBottom: "0.4rem" }}>
           <span>Progress</span>
           <span>{completedSteps} of {totalSteps} steps completed ({pct}%)</span>
         </div>
-        <div style={{ height: "6px", borderRadius: "999px", backgroundColor: "#1f2937", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${pct}%`, backgroundColor: "#22c55e", borderRadius: "999px", transition: "width 0.3s ease" }} />
+        <div style={{ height: "6px", borderRadius: "999px", backgroundColor: "#EBF5FF", overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pct}%`, backgroundColor: "#1A7FD4", borderRadius: "999px", transition: "width 0.3s ease" }} />
         </div>
       </div>
 
@@ -491,7 +491,7 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
             paddingLeft: "2rem",
             fontSize: "0.72rem",
             fontWeight: 700,
-            color: "#6b7280",
+            color: "#6B8BAE",
             textTransform: "uppercase",
             letterSpacing: "0.07em",
           }}>
@@ -507,7 +507,7 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
               top: 0,
               bottom: 0,
               width: "2px",
-              background: "#1e293b",
+              background: "#DDEAF7",
               zIndex: 0,
             }} />
 
@@ -541,13 +541,13 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
           {fallbackSteps.map((step) => (
             <div key={step.id} style={{
               padding: "0.875rem 1.25rem",
-              background: "#0f172a",
-              border: "1px solid #1e293b",
+              background: "#FFFFFF",
+              border: "1px solid #DDEAF7",
               borderRadius: "0.75rem",
               marginBottom: "0.75rem",
             }}>
-              <p style={{ fontWeight: 700, color: "#f9fafb", margin: "0 0 0.25rem" }}>{step.title}</p>
-              <p style={{ color: "#9ca3af", margin: 0, fontSize: "0.875rem" }}>{step.description}</p>
+              <p style={{ fontWeight: 700, color: "#0D1F3C", margin: "0 0 0.25rem" }}>{step.title}</p>
+              <p style={{ color: "#6B8BAE", margin: 0, fontSize: "0.875rem" }}>{step.description}</p>
             </div>
           ))}
         </div>
@@ -565,11 +565,11 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
               justifyContent: "space-between",
               alignItems: "center",
               background: "none",
-              border: "1px solid #1e293b",
+              border: "1px solid #DDEAF7",
               borderRadius: isResourcesOpen ? "0.5rem 0.5rem 0 0" : "0.5rem",
               padding: "0.75rem 1rem",
               cursor: "pointer",
-              color: "#9ca3af",
+              color: "#6B8BAE",
               fontSize: "0.8rem",
               fontWeight: 600,
             }}
@@ -587,7 +587,7 @@ const RoadmapDisplay: React.FC<Props> = ({ steps, planMeta, clientId, onStepUpda
             maxHeight: isResourcesOpen ? "2000px" : "0",
             overflow: "hidden",
             transition: "max-height 0.3s ease",
-            border: isResourcesOpen ? "1px solid #1e293b" : "none",
+            border: isResourcesOpen ? "1px solid #DDEAF7" : "none",
             borderTop: "none",
             borderRadius: "0 0 0.5rem 0.5rem",
             padding: isResourcesOpen ? "0.75rem" : "0",

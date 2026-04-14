@@ -9,7 +9,7 @@ import clientRoutes from "./routes/clientRoutes";
 import evaluateRoutes from "./routes/evaluateRoutes";
 import documentRouter from "./routes/documentRoutes";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 initDb();
 

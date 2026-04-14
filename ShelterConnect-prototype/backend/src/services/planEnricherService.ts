@@ -3,6 +3,7 @@ import { ActionPlan, ActionPlanStep } from "../types/index";
 import { Client } from "../models/Client";
 
 const MODEL = "claude-haiku-4-5-20251001"; // Fast + cheap for plan enrichment
+const FALLBACK_MODEL = "claude-3-5-haiku-20241022"; // fallback if primary model unavailable
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Fallback: convert raw step strings to basic ActionPlanStep objects
@@ -117,28 +118,44 @@ export async function enrichPlanWithAI(
     const anthropic = new Anthropic({ apiKey });
     const prompt = buildPrompt(plan, client);
 
-    const message = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      messages: [{ role: "user", content: prompt }],
-    });
+    let message;
+    try {
+      message = await anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 4096,
+        messages: [{ role: "user", content: prompt }],
+      });
+    } catch (modelErr) {
+      console.warn(`[planEnricher] Primary model ${MODEL} failed, retrying with ${FALLBACK_MODEL}:`, modelErr instanceof Error ? modelErr.message : modelErr);
+      message = await anthropic.messages.create({
+        model: FALLBACK_MODEL,
+        max_tokens: 4096,
+        messages: [{ role: "user", content: prompt }],
+      });
+    }
 
     const rawContent = message.content[0];
     if (rawContent.type !== "text") {
       throw new Error("Unexpected response type from Claude");
     }
 
-    // Strip any accidental markdown code fences
-    const jsonText = rawContent.text
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```\s*$/, "")
-      .trim();
+    // Extract JSON — find first { and last } to handle any prose wrapping
+    const rawText = rawContent.text;
+    const jsonStart = rawText.indexOf("{");
+    const jsonEnd = rawText.lastIndexOf("}");
+    if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) {
+      console.error("[planEnricher] Could not find JSON in response. Raw response:\n", rawText.slice(0, 500));
+      throw new Error("No valid JSON object found in Claude response");
+    }
+    const jsonText = rawText.slice(jsonStart, jsonEnd + 1).trim();
 
-    const parsed = JSON.parse(jsonText) as {
-      finalGoal: string;
-      summary: string;
-      steps: ActionPlanStep[];
-    };
+    let parsed: { finalGoal: string; summary: string; steps: ActionPlanStep[] };
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (parseErr) {
+      console.error("[planEnricher] JSON.parse failed. Extracted text:\n", jsonText.slice(0, 500));
+      throw new Error("Failed to parse Claude JSON response");
+    }
 
     // Validate structure
     if (
@@ -155,8 +172,12 @@ export async function enrichPlanWithAI(
       summary: parsed.summary,
       steps: parsed.steps,
     };
-  } catch (err) {
-    console.error("[planEnricher] AI enrichment failed — falling back to basic steps:", err);
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const errStack = err instanceof Error ? err.stack : undefined;
+    console.error("[planEnricher] AI enrichment FAILED");
+    console.error("[planEnricher] Error message:", errMsg);
+    if (errStack) console.error("[planEnricher] Stack:", errStack);
     return buildFallbackPlan(plan, client);
   }
 }

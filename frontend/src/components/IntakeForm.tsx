@@ -281,7 +281,7 @@ const IntakeForm: React.FC = () => {
   // ── Navigation ────────────────────────────────────────────────────────────
 
   const validateStep = (): string | null => {
-    if (step === 1 && !form.name.trim()) return "Client name is required to continue.";
+    if (step === 1 && !form.name.trim()) return "Individual name is required to continue.";
     if (step === 2) {
       if (!form.currentShelterStatus) return "Please select a current housing situation.";
       if (!form.housingGoal) return "Please select a housing goal.";
@@ -397,9 +397,9 @@ const IntakeForm: React.FC = () => {
           <label htmlFor="name" style={labelStyle}>
             Full Name <span style={{ color: "#ef4444" }}>*</span>
           </label>
-          <p style={helperStyle}>First and last name of the client</p>
+          <p style={helperStyle}>First and last name of the individual</p>
           <input id="name" name="name" type="text" value={form.name} onChange={handleText}
-            placeholder="Client's full name" autoComplete="off" style={inputStyle} />
+            placeholder="Individual's full name" autoComplete="off" style={inputStyle} />
         </FieldCard>
 
         <FieldCard>
@@ -411,7 +411,7 @@ const IntakeForm: React.FC = () => {
 
         <FieldCard>
           <label htmlFor="phone" style={labelStyle}>Phone Number</label>
-          <p style={helperStyle}>Best number to reach the client</p>
+          <p style={helperStyle}>Best number to reach the individual</p>
           <input id="phone" name="phone" type="text" value={form.phone} onChange={handleText}
             placeholder="555-000-0000" style={inputStyle} />
         </FieldCard>
@@ -533,7 +533,7 @@ const IntakeForm: React.FC = () => {
         <h3 style={{ margin: "0 0 1.5rem", fontWeight: 700, color: "#f9fafb" }}>Housing Situation</h3>
 
         {renderGroup(
-          "What is the client's current housing situation?",
+          "What is the individual's current housing situation?",
           "Select the option that best describes where they are sleeping right now",
           "currentShelterStatus",
           SHELTER_OPTIONS,
@@ -541,7 +541,7 @@ const IntakeForm: React.FC = () => {
         )}
 
         {renderGroup(
-          "How long has the client been without stable housing?",
+          "How long has the individual been without stable housing?",
           "Include time in shelters, couch-surfing, or the street",
           "durationHomeless",
           durationOptions,
@@ -550,7 +550,7 @@ const IntakeForm: React.FC = () => {
         )}
 
         {renderGroup(
-          "What is the client's primary housing goal?",
+          "What is the individual's primary housing goal?",
           "This shapes the roadmap priority and service matches",
           "housingGoal",
           GOAL_OPTIONS,
@@ -558,7 +558,7 @@ const IntakeForm: React.FC = () => {
         )}
 
         {renderGroup(
-          "Does the client have a special circumstance?",
+          "Does the individual have a special circumstance?",
           "Unlocks targeted resources and program pathways",
           "specialCircumstance",
           CIRCUMSTANCE_OPTIONS,
@@ -574,10 +574,10 @@ const IntakeForm: React.FC = () => {
       <div style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ margin: 0, fontWeight: 700, color: "#f9fafb" }}>Document Checklist</h3>
         <p style={{ margin: "0.4rem 0 0", color: "#9ca3af", fontSize: "0.875rem" }}>
-          Check each document the client currently has in hand.
+          Check each document the individual currently has in hand.
         </p>
         <p style={{ margin: "0.2rem 0 0", color: "#9ca3af", fontSize: "0.8rem" }}>
-          These 5 documents determine the client's housing eligibility path.
+          These 5 documents determine the individual's housing eligibility path.
         </p>
       </div>
 
@@ -714,7 +714,7 @@ const IntakeForm: React.FC = () => {
             rows={4}
             value={form.notes}
             onChange={handleText}
-            placeholder="Any additional context, observations, or follow-up reminders for this client..."
+            placeholder="Any additional context, observations, or follow-up reminders for this individual..."
             style={{
               width: "100%",
               padding: "0.65rem 0.75rem",
