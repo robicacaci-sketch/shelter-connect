@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "https://shelter-connect-production.up.railway.app"
+      "/api": "https://shelter-connect.onrender.com"
     }
   }
 });
