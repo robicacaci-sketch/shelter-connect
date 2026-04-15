@@ -162,9 +162,9 @@ const FieldCard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{
-        border: `1.5px solid ${focused ? "#38bdf8" : "#1e293b"}`,
+        border: `1.5px solid ${focused ? "#1A7FD4" : "#DDEAF7"}`,
         borderRadius: "0.75rem",
-        backgroundColor: "#111827",
+        backgroundColor: "#FFFFFF",
         padding: "1.5rem",
         marginBottom: "0.875rem",
         transition: "border-color 0.15s ease",
@@ -191,7 +191,7 @@ const ProgressBar: React.FC<{ step: number }> = ({ step }) => {
           left: "1.25rem",
           right: "1.25rem",
           height: "2px",
-          backgroundColor: "#1f2937",
+          backgroundColor: "#DDEAF7",
           transform: "translateY(-50%)",
           zIndex: 0
         }} />
@@ -202,7 +202,7 @@ const ProgressBar: React.FC<{ step: number }> = ({ step }) => {
           left: "1.25rem",
           width: `calc(${((step - 1) / 4) * 100}% - ${((step - 1) / 4) * 2.5}rem)`,
           height: "2px",
-          backgroundColor: "#38bdf8",
+          backgroundColor: "#1A7FD4",
           transform: "translateY(-50%)",
           zIndex: 0,
           transition: "width 0.3s ease"
@@ -229,16 +229,16 @@ const ProgressBar: React.FC<{ step: number }> = ({ step }) => {
                 justifyContent: "center",
                 fontSize: "0.8rem",
                 fontWeight: 700,
-                border: `2px solid ${done || active ? "#38bdf8" : "#1f2937"}`,
-                backgroundColor: done ? "#38bdf8" : active ? "#0b1721" : "#111827",
-                color: done ? "#0b1721" : active ? "#38bdf8" : "#4b5563",
+                border: `2px solid ${done || active ? "#1A7FD4" : "#DDEAF7"}`,
+                backgroundColor: done ? "#1A7FD4" : active ? "#FFFFFF" : "#F4F9FF",
+                color: done ? "#FFFFFF" : active ? "#1A7FD4" : "#6B8BAE",
                 transition: "all 0.2s"
               }}>
                 {done ? "✓" : stepNum}
               </div>
               <span style={{
                 fontSize: "0.65rem",
-                color: active ? "#38bdf8" : done ? "#93c5fd" : "#6b7280",
+                color: active ? "#1A7FD4" : done ? "#1A7FD4" : "#6B8BAE",
                 textAlign: "center",
                 lineHeight: 1.2,
                 maxWidth: "4.5rem"
@@ -369,21 +369,21 @@ const IntakeForm: React.FC = () => {
       display: "block",
       fontSize: "0.95rem",
       fontWeight: 600,
-      color: "#f9fafb",
+      color: "#0D1F3C",
       marginBottom: "0.2rem",
     };
     const helperStyle: React.CSSProperties = {
       fontSize: "0.8rem",
-      color: "#6b7280",
+      color: "#6B8BAE",
       margin: "0.2rem 0 0.75rem",
     };
     const inputStyle: React.CSSProperties = {
       width: "100%",
       padding: "0.65rem 0.75rem",
       borderRadius: "0.375rem",
-      border: "1px solid #1f2937",
-      backgroundColor: "#0f172a",
-      color: "#f9fafb",
+      border: "1px solid #DDEAF7",
+      backgroundColor: "#F4F9FF",
+      color: "#0D1F3C",
       fontSize: "0.95rem",
       boxSizing: "border-box",
       outline: "none",
@@ -391,7 +391,7 @@ const IntakeForm: React.FC = () => {
 
     return (
       <div>
-        <h3 style={{ margin: "0 0 1.25rem", fontWeight: 700, color: "#f9fafb" }}>Personal Information</h3>
+        <h3 style={{ margin: "0 0 1.25rem", fontWeight: 700, color: "#0D1F3C" }}>Personal Information</h3>
 
         <FieldCard>
           <label htmlFor="name" style={labelStyle}>
@@ -438,9 +438,9 @@ const IntakeForm: React.FC = () => {
                     minWidth: "3rem",
                     padding: "0.5rem 0.5rem",
                     borderRadius: "999px",
-                    border: `1.5px solid ${isSelected ? "#2563eb" : "#374151"}`,
-                    backgroundColor: isSelected ? "#2563eb" : "transparent",
-                    color: isSelected ? "#ffffff" : "#9ca3af",
+                    border: `1.5px solid ${isSelected ? "#1A7FD4" : "#DDEAF7"}`,
+                    backgroundColor: isSelected ? "#1A7FD4" : "transparent",
+                    color: isSelected ? "#ffffff" : "#6B8BAE",
                     cursor: "pointer",
                     fontSize: "0.875rem",
                     fontWeight: 600,
@@ -467,10 +467,10 @@ const IntakeForm: React.FC = () => {
       deselectedValue = ""
     ) => (
       <div style={{ marginBottom: "2rem" }}>
-        <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#f9fafb", margin: "0 0 0.3rem" }}>
+        <p style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0D1F3C", margin: "0 0 0.3rem" }}>
           {question}{required && <span style={{ color: "#ef4444" }}> *</span>}
         </p>
-        <p style={{ fontSize: "0.82rem", color: "#6b7280", margin: "0 0 1rem" }}>{helper}</p>
+        <p style={{ fontSize: "0.82rem", color: "#6B8BAE", margin: "0 0 1rem" }}>{helper}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {options.map(({ value, label }) => {
             const isSelected = form[field] === value;
@@ -492,9 +492,9 @@ const IntakeForm: React.FC = () => {
                 }}
                 style={{
                   padding: "1rem 1.25rem",
-                  border: `2px solid ${isSelected ? "#38bdf8" : "#1e293b"}`,
+                  border: `2px solid ${isSelected ? "#1A7FD4" : "#DDEAF7"}`,
                   borderRadius: "0.625rem",
-                  backgroundColor: isSelected ? "rgba(56,189,248,0.08)" : "#111827",
+                  backgroundColor: isSelected ? "#EBF5FF" : "#FFFFFF",
                   cursor: "pointer",
                   transition: "border-color 0.15s, background 0.15s",
                   display: "flex",
@@ -508,17 +508,17 @@ const IntakeForm: React.FC = () => {
                   width: "1.1rem",
                   height: "1.1rem",
                   borderRadius: "50%",
-                  border: `2px solid ${isSelected ? "#38bdf8" : "#374151"}`,
+                  border: `2px solid ${isSelected ? "#1A7FD4" : "#DDEAF7"}`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
                 }}>
                   {isSelected && (
-                    <div style={{ width: "0.5rem", height: "0.5rem", borderRadius: "50%", backgroundColor: "#38bdf8" }} />
+                    <div style={{ width: "0.5rem", height: "0.5rem", borderRadius: "50%", backgroundColor: "#1A7FD4" }} />
                   )}
                 </div>
-                <span style={{ fontSize: "0.92rem", fontWeight: 500, color: "#f9fafb" }}>{label}</span>
+                <span style={{ fontSize: "0.92rem", fontWeight: 500, color: "#0D1F3C" }}>{label}</span>
               </div>
             );
           })}
@@ -530,7 +530,7 @@ const IntakeForm: React.FC = () => {
 
     return (
       <div>
-        <h3 style={{ margin: "0 0 1.5rem", fontWeight: 700, color: "#f9fafb" }}>Housing Situation</h3>
+        <h3 style={{ margin: "0 0 1.5rem", fontWeight: 700, color: "#0D1F3C" }}>Housing Situation</h3>
 
         {renderGroup(
           "What is the individual's current housing situation?",
@@ -572,11 +572,11 @@ const IntakeForm: React.FC = () => {
   const renderStep3 = () => (
     <div>
       <div style={{ marginBottom: "1.25rem" }}>
-        <h3 style={{ margin: 0, fontWeight: 700, color: "#f9fafb" }}>Document Checklist</h3>
-        <p style={{ margin: "0.4rem 0 0", color: "#9ca3af", fontSize: "0.875rem" }}>
+        <h3 style={{ margin: 0, fontWeight: 700, color: "#0D1F3C" }}>Document Checklist</h3>
+        <p style={{ margin: "0.4rem 0 0", color: "#6B8BAE", fontSize: "0.875rem" }}>
           Check each document the individual currently has in hand.
         </p>
-        <p style={{ margin: "0.2rem 0 0", color: "#9ca3af", fontSize: "0.8rem" }}>
+        <p style={{ margin: "0.2rem 0 0", color: "#6B8BAE", fontSize: "0.8rem" }}>
           These 5 documents determine the individual's housing eligibility path.
         </p>
       </div>
@@ -588,9 +588,9 @@ const IntakeForm: React.FC = () => {
             alignItems: "flex-start",
             gap: "0.75rem",
             padding: "0.85rem 1rem",
-            border: `2px solid ${form[key] ? "#16a34a" : "#1f2937"}`,
+            border: `2px solid ${form[key] ? "#16a34a" : "#DDEAF7"}`,
             borderRadius: "0.5rem",
-            backgroundColor: form[key] ? "rgba(22,163,74,0.08)" : "#111827",
+            backgroundColor: form[key] ? "#EAF7F2" : "#FFFFFF",
             cursor: "pointer",
             transition: "border-color 0.15s, background 0.15s"
           }}>
@@ -598,12 +598,12 @@ const IntakeForm: React.FC = () => {
               type="checkbox"
               checked={form[key]}
               onChange={() => handleCheck(key)}
-              style={{ marginTop: "0.25rem", width: "1.1rem", height: "1.1rem", flexShrink: 0, accentColor: "#38bdf8" }}
+              style={{ marginTop: "0.25rem", width: "1.1rem", height: "1.1rem", flexShrink: 0, accentColor: "#1A7FD4" }}
             />
             <div>
-              <p style={{ fontWeight: 600, margin: 0, color: "#f9fafb" }}>{label}</p>
+              <p style={{ fontWeight: 600, margin: 0, color: "#0D1F3C" }}>{label}</p>
               {hint.split("\n").map((line, i) => (
-                <p key={i} style={{ color: "#9ca3af", fontSize: "0.78rem", margin: i === 0 ? "0.25rem 0 0" : "0.1rem 0 0" }}>
+                <p key={i} style={{ color: "#6B8BAE", fontSize: "0.78rem", margin: i === 0 ? "0.25rem 0 0" : "0.1rem 0 0" }}>
                   {line}
                 </p>
               ))}
@@ -617,14 +617,14 @@ const IntakeForm: React.FC = () => {
         padding: "0.85rem 1rem",
         borderRadius: "0.5rem",
         border: `2px solid ${priorityDisplay.color}`,
-        backgroundColor: "#111827",
+        backgroundColor: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         gap: "0.75rem"
       }}>
         <span style={{ fontSize: "1.4rem" }}>{priorityDisplay.emoji}</span>
         <div>
-          <p style={{ margin: 0, fontWeight: 700, color: "#f9fafb" }}>Documents confirmed: {docCount} of 5</p>
+          <p style={{ margin: 0, fontWeight: 700, color: "#0D1F3C" }}>Documents confirmed: {docCount} of 5</p>
           <p style={{ margin: "0.15rem 0 0", fontSize: "0.8rem", color: priorityDisplay.color }}>
             {priorityDisplay.label}
           </p>
@@ -638,7 +638,7 @@ const IntakeForm: React.FC = () => {
 
     const renderGroup = (title: string, items: CheckItem[]) => (
       <div style={{ marginBottom: "1.5rem" }}>
-        <p style={{ fontWeight: 600, color: "#38bdf8", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.6rem" }}>
+        <p style={{ fontWeight: 600, color: "#1A7FD4", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.6rem" }}>
           {title}
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
@@ -648,9 +648,9 @@ const IntakeForm: React.FC = () => {
               alignItems: "flex-start",
               gap: "0.75rem",
               padding: "0.75rem 1rem",
-              border: `2px solid ${form[field] ? "#38bdf8" : "#1f2937"}`,
+              border: `2px solid ${form[field] ? "#1A7FD4" : "#DDEAF7"}`,
               borderRadius: "0.5rem",
-              backgroundColor: form[field] ? "rgba(56,189,248,0.07)" : "#111827",
+              backgroundColor: form[field] ? "#EBF5FF" : "#FFFFFF",
               cursor: "pointer",
               transition: "border-color 0.15s, background 0.15s"
             }}>
@@ -658,11 +658,11 @@ const IntakeForm: React.FC = () => {
                 type="checkbox"
                 checked={form[field] as boolean}
                 onChange={() => handleCheck(field)}
-                style={{ marginTop: "0.25rem", width: "1.1rem", height: "1.1rem", flexShrink: 0, accentColor: "#38bdf8" }}
+                style={{ marginTop: "0.25rem", width: "1.1rem", height: "1.1rem", flexShrink: 0, accentColor: "#1A7FD4" }}
               />
               <div>
-                <p style={{ fontWeight: 600, margin: 0, color: "#f9fafb" }}>{label}</p>
-                {helper && <p style={{ color: "#9ca3af", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>{helper}</p>}
+                <p style={{ fontWeight: 600, margin: 0, color: "#0D1F3C" }}>{label}</p>
+                {helper && <p style={{ color: "#6B8BAE", fontSize: "0.78rem", margin: "0.2rem 0 0" }}>{helper}</p>}
               </div>
             </label>
           ))}
@@ -673,8 +673,8 @@ const IntakeForm: React.FC = () => {
     return (
       <div>
         <div style={{ marginBottom: "1.25rem" }}>
-          <h3 style={{ margin: 0, fontWeight: 700, color: "#f9fafb" }}>Barriers &amp; Health</h3>
-          <p style={{ margin: "0.4rem 0 0", color: "#9ca3af", fontSize: "0.875rem" }}>
+          <h3 style={{ margin: 0, fontWeight: 700, color: "#0D1F3C" }}>Barriers &amp; Health</h3>
+          <p style={{ margin: "0.4rem 0 0", color: "#6B8BAE", fontSize: "0.875rem" }}>
             Check all that apply to help the shelter manager provide complete support.
           </p>
         </div>
@@ -703,7 +703,7 @@ const IntakeForm: React.FC = () => {
     return (
       <div>
         <div style={{ marginBottom: "1.25rem" }}>
-          <h3 style={{ margin: 0, fontWeight: 700, color: "#f9fafb" }}>Notes &amp; Submit</h3>
+          <h3 style={{ margin: 0, fontWeight: 700, color: "#0D1F3C" }}>Notes &amp; Submit</h3>
         </div>
 
         <div className="form__field">
@@ -719,9 +719,9 @@ const IntakeForm: React.FC = () => {
               width: "100%",
               padding: "0.65rem 0.75rem",
               borderRadius: "0.375rem",
-              border: "1px solid #1f2937",
-              backgroundColor: "#111827",
-              color: "#f9fafb",
+              border: "1px solid #DDEAF7",
+              backgroundColor: "#F4F9FF",
+              color: "#0D1F3C",
               fontSize: "0.9rem",
               resize: "vertical",
               boxSizing: "border-box"
@@ -735,23 +735,23 @@ const IntakeForm: React.FC = () => {
           padding: "1.25rem",
           borderRadius: "0.5rem",
           border: `2px solid ${priorityDisplay.color}`,
-          backgroundColor: "#111827"
+          backgroundColor: "#FFFFFF"
         }}>
-          <p style={{ margin: "0 0 0.75rem", fontWeight: 700, color: "#f9fafb", fontSize: "0.9rem" }}>
-            Ready to generate roadmap for: <span style={{ color: "#38bdf8" }}>{form.name || "—"}</span>
+          <p style={{ margin: "0 0 0.75rem", fontWeight: 700, color: "#0D1F3C", fontSize: "0.9rem" }}>
+            Ready to generate roadmap for: <span style={{ color: "#1A7FD4" }}>{form.name || "—"}</span>
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.85rem" }}>
-              Documents confirmed: <strong style={{ color: "#f9fafb" }}>{docCount} of 5</strong>
+            <p style={{ margin: 0, color: "#6B8BAE", fontSize: "0.85rem" }}>
+              Documents confirmed: <strong style={{ color: "#0D1F3C" }}>{docCount} of 5</strong>
             </p>
-            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.85rem" }}>
+            <p style={{ margin: 0, color: "#6B8BAE", fontSize: "0.85rem" }}>
               Priority:{" "}
               <strong style={{ color: priorityDisplay.color }}>
                 {priorityDisplay.emoji} {priority}
               </strong>
             </p>
-            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.85rem" }}>
-              Special circumstance: <strong style={{ color: "#f9fafb" }}>{circumLabel}</strong>
+            <p style={{ margin: 0, color: "#6B8BAE", fontSize: "0.85rem" }}>
+              Special circumstance: <strong style={{ color: "#0D1F3C" }}>{circumLabel}</strong>
             </p>
           </div>
         </div>
@@ -760,10 +760,10 @@ const IntakeForm: React.FC = () => {
           <div role="alert" style={{
             marginTop: "1rem",
             padding: "0.75rem 1rem",
-            backgroundColor: "rgba(239,68,68,0.1)",
+            backgroundColor: "#FEF0EE",
             border: "1px solid #ef4444",
             borderRadius: "0.375rem",
-            color: "#fca5a5",
+            color: "#C0391B",
             fontSize: "0.875rem"
           }}>
             {submitError}
@@ -790,10 +790,10 @@ const IntakeForm: React.FC = () => {
           <div role="alert" style={{
             marginTop: "1rem",
             padding: "0.65rem 0.9rem",
-            backgroundColor: "rgba(239,68,68,0.1)",
+            backgroundColor: "#FEF0EE",
             border: "1px solid #ef4444",
             borderRadius: "0.375rem",
-            color: "#fca5a5",
+            color: "#C0391B",
             fontSize: "0.875rem"
           }}>
             {stepError}
@@ -813,9 +813,9 @@ const IntakeForm: React.FC = () => {
               style={{
                 padding: "0.6rem 1.4rem",
                 borderRadius: "0.375rem",
-                border: "1px solid #1f2937",
+                border: "1px solid #DDEAF7",
                 backgroundColor: "transparent",
-                color: "#9ca3af",
+                color: "#6B8BAE",
                 cursor: "pointer",
                 fontSize: "0.9rem",
                 fontWeight: 600
