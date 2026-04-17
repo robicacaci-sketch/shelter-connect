@@ -1,0 +1,25 @@
+export interface OnlineOption {
+  url: string;
+  label: string;
+  instructions: string;
+}
+
+const RULES: { keywords: string[]; option: OnlineOption }[] = [
+  { keywords: ["birth cert", "vital records", "birth record"], option: { url: "https://www.nj.gov/health/vital/order-cert/", label: "Order NJ Birth Certificate Online", instructions: "Click 'Order a New Jersey Vital Record' → select Birth Certificate → enter the client's full name and date of birth → choose standard delivery. Call 609-292-4087 to request the homeless applicant fee waiver if client has no photo ID." }},
+  { keywords: ["mvc", "motor vehicle", "state id", "non-driver", "nj id"], option: { url: "https://telegov.njportal.com/njmvc/AppointmentWizard", label: "Schedule NJ MVC Appointment Online", instructions: "Select 'Non-Driver ID' → choose nearest MVC agency → pick a date → confirm. Bring birth certificate, SSN card, and a Homeless Verification Letter. Ask for the fee waiver at the counter." }},
+  { keywords: ["social security", "ssn", "ssa", "ss card", "replacement card"], option: { url: "https://www.ssa.gov/number-card/replace-card", label: "Request Replacement SSN Card Online (SSA)", instructions: "Click 'Request a replacement card' → create or sign into a my Social Security account → verify identity → submit. Card arrives by mail in 10–14 business days at no charge." }},
+  { keywords: ["familycare", "medicaid", "njhelps", "snap", "food stamp", "nj benefits"], option: { url: "https://www.njhelps.org", label: "Apply for NJ Benefits at NJHelps.org", instructions: "Click 'Apply Now' → select programs (NJ FamilyCare, SNAP, WorkFirst NJ) → complete the form. No SSN required to start. Emergency SNAP approved in 7 days." }},
+  { keywords: ["211", "nj 211", "homelessness prevention", "hpp"], option: { url: "https://www.nj211.org", label: "Find NJ 211 Services Online", instructions: "Click 'Find Help' → enter the client's ZIP code → filter by Shelter or Housing. Also available 24/7 by texting ZIP to 898-211 or dialing 2-1-1." }},
+  { keywords: ["coordinated entry", "coc", "continuum of care"], option: { url: "https://www.211nj.org/housing/", label: "Find NJ CoC Coordinated Entry Contact (211NJ)", instructions: "Click 'Housing Resources' → find your county's Coordinated Entry contact → call or walk in for a VI-SPDAT assessment, required for emergency housing vouchers and rapid rehousing." }},
+  { keywords: ["veteran", "dd-214", "dd214", "va record"], option: { url: "https://www.va.gov/records/get-military-service-records/", label: "Request DD-214 / Military Records (VA.gov)", instructions: "Click 'Get your VA records online' → sign in with VA.gov or ID.me → select DD-214 request → submit eVetRecs form. Check 'Homeless Veteran' for expedited handling." }},
+  { keywords: ["dca", "section 8", "rental assistance", "housing assistance", "housing voucher"], option: { url: "https://www.nj.gov/dca/divisions/dhcr/offices/homeprev.html", label: "Apply for NJ Housing Assistance (DCA/HPP)", instructions: "Scroll to the county contacts table → find the client's county HPP coordinator → call or email to start the application. Also call NJ 211 for a direct referral." }},
+  { keywords: ["legal services", "eviction", "legal aid", "lsnj"], option: { url: "https://www.lsnj.org/LegalTopics/Housing.aspx", label: "Apply for Free Legal Aid (Legal Services of NJ)", instructions: "Click 'Apply for Services' → select Housing → enter county and income → submit intake form. Free for income-qualifying NJ residents. Also call 1-888-576-5529." }},
+];
+
+export function getOnlineOptionForStep(title: string, extra?: string): OnlineOption | null {
+  const text = `${title} ${extra ?? ""}`.toLowerCase();
+  for (const rule of RULES) {
+    if (rule.keywords.some(kw => text.includes(kw))) return rule.option;
+  }
+  return null;
+}

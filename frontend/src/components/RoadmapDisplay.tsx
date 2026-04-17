@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { PlanMeta, RoadmapStep, updateStepNote } from "../api/clientApi";
 import { useAuth } from "../context/AuthContext";
+import { getOnlineOptionForStep, OnlineOption } from "../data/stepLinks";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type ActionPlanStep = {
@@ -13,6 +14,7 @@ type ActionPlanStep = {
   goal_of_this_step: string;
   why_it_matters: string;
   expected_outcome: string;
+  onlineOption?: OnlineOption;
 };
 
 type ResourceData = {
@@ -168,6 +170,8 @@ function ActionStepCard({
   onNoteUpdate?: (stepId: string, notes: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const onlineOption = parsed.onlineOption ?? getOnlineOptionForStep(parsed.action, step.title);
 
   return (
     <div style={{
@@ -326,6 +330,18 @@ function ActionStepCard({
                 <p style={{ margin: 0, color: "#0D1F3C", fontSize: "0.875rem", lineHeight: 1.5 }}>
                   {parsed.expected_outcome}
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* 🌐 Do it online */}
+          {onlineOption && (
+            <div style={{ display:"flex", gap:"0.6rem", background:"rgba(20,184,166,0.08)", border:"1px solid rgba(20,184,166,0.35)", borderRadius:"0.5rem", padding:"0.875rem" }}>
+              <span style={{ fontSize:"1.1rem", lineHeight:1.4, flexShrink:0 }}>🌐</span>
+              <div style={{ flex:1 }}>
+                <p style={{ margin:"0 0 0.5rem", fontSize:"0.7rem", fontWeight:700, color:"#2dd4bf", textTransform:"uppercase", letterSpacing:"0.06em" }}>Do it online — skip the phone queue</p>
+                <a href={onlineOption.url} target="_blank" rel="noopener noreferrer" style={{ display:"inline-flex", alignItems:"center", gap:"0.35rem", padding:"0.35rem 0.85rem", borderRadius:"999px", backgroundColor:"#0d9488", color:"#ffffff", fontSize:"0.78rem", fontWeight:700, textDecoration:"none", marginBottom:"0.65rem" }}>↗ {onlineOption.label}</a>
+                <p style={{ margin:0, color:"#99f6e4", fontSize:"0.82rem", lineHeight:1.6 }}>{onlineOption.instructions}</p>
               </div>
             </div>
           )}
