@@ -1,11 +1,6 @@
 import React, { useMemo } from "react";
 import { PlanMeta, RoadmapStep } from "../api/clientApi";
-
-type OnlineOption = {
-  url: string;
-  label: string;
-  instructions: string;
-};
+import { getOnlineOptionForStep, OnlineOption } from "../data/stepLinks";
 
 type ActionPlanStep = {
   step_number: number;
@@ -66,6 +61,10 @@ function ActionStepCard({
   parsed: ActionPlanStep;
   onStepUpdate?: Props["onStepUpdate"];
 }) {
+  // Use backend-injected onlineOption if present; otherwise look it up locally
+  const onlineOption: OnlineOption | null =
+    parsed.onlineOption ?? getOnlineOptionForStep(parsed.action, step.title);
+
   return (
     <div style={{
       background: "#0f172a",
@@ -197,7 +196,7 @@ function ActionStepCard({
         </div>
 
         {/* Do it online — shown when a direct agency link is available */}
-        {parsed.onlineOption && (
+        {onlineOption && (
           <div style={{
             display: "flex",
             gap: "0.6rem",
@@ -212,7 +211,7 @@ function ActionStepCard({
                 Do it online — skip the phone queue
               </p>
               <a
-                href={parsed.onlineOption.url}
+                href={onlineOption.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -230,10 +229,10 @@ function ActionStepCard({
                   wordBreak: "break-word",
                 }}
               >
-                ↗ {parsed.onlineOption.label}
+                ↗ {onlineOption.label}
               </a>
               <p style={{ margin: 0, color: "#99f6e4", fontSize: "0.82rem", lineHeight: 1.6 }}>
-                {parsed.onlineOption.instructions}
+                {onlineOption.instructions}
               </p>
             </div>
           </div>
