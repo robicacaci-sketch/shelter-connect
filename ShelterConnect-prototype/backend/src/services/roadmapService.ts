@@ -63,6 +63,7 @@ const buildStepsForClient = async (client: Client): Promise<{
         cost: resource.cost,
         coverageArea: resource.coverageArea,
         category: resource.category,
+        url: resource.url,
       }),
       status: "not_started",
     });

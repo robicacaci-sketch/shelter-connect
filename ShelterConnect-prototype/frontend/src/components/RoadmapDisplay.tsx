@@ -1,6 +1,12 @@
 import React, { useMemo } from "react";
 import { PlanMeta, RoadmapStep } from "../api/clientApi";
 
+type OnlineOption = {
+  url: string;
+  label: string;
+  instructions: string;
+};
+
 type ActionPlanStep = {
   step_number: number;
   action: string;
@@ -10,6 +16,7 @@ type ActionPlanStep = {
   goal_of_this_step: string;
   why_it_matters: string;
   expected_outcome: string;
+  onlineOption?: OnlineOption;
 };
 
 type ResourceData = {
@@ -18,6 +25,7 @@ type ResourceData = {
   cost?: string;
   coverageArea?: string;
   category?: string;
+  url?: string;
 };
 
 type Props = {
@@ -188,6 +196,49 @@ function ActionStepCard({
           </div>
         </div>
 
+        {/* Do it online — shown when a direct agency link is available */}
+        {parsed.onlineOption && (
+          <div style={{
+            display: "flex",
+            gap: "0.6rem",
+            background: "rgba(20, 184, 166, 0.08)",
+            border: "1px solid rgba(20, 184, 166, 0.35)",
+            borderRadius: "0.5rem",
+            padding: "0.875rem",
+          }}>
+            <span style={{ fontSize: "1.1rem", lineHeight: 1.4, flexShrink: 0 }}>🌐</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: "0 0 0.5rem", fontSize: "0.7rem", fontWeight: 700, color: "#2dd4bf", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Do it online — skip the phone queue
+              </p>
+              <a
+                href={parsed.onlineOption.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "999px",
+                  backgroundColor: "#0d9488",
+                  color: "#ffffff",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  marginBottom: "0.65rem",
+                  wordBreak: "break-word",
+                }}
+              >
+                ↗ {parsed.onlineOption.label}
+              </a>
+              <p style={{ margin: 0, color: "#99f6e4", fontSize: "0.82rem", lineHeight: 1.6 }}>
+                {parsed.onlineOption.instructions}
+              </p>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -211,6 +262,16 @@ function ResourceCard({ step }: { step: RoadmapStep }) {
         <div style={{ fontSize: "0.8rem", color: "#9ca3af", lineHeight: 1.6 }}>
           {data.description && <span>{data.description}</span>}
           {data.phone && <span style={{ display: "block", color: "#60a5fa" }}>📞 {data.phone}</span>}
+          {data.url && (
+            <a
+              href={data.url.startsWith("http") ? data.url : `https://${data.url}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "block", color: "#2dd4bf", marginTop: "0.2rem", fontSize: "0.77rem" }}
+            >
+              🌐 {data.url}
+            </a>
+          )}
           {data.cost && data.cost !== "Free" && <span style={{ display: "block" }}>Cost: {data.cost}</span>}
           {data.coverageArea && <span style={{ display: "block" }}>Area: {data.coverageArea}</span>}
         </div>

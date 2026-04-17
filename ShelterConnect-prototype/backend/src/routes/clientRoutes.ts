@@ -10,6 +10,27 @@ import { getOrCreateRoadmapForClient } from "../services/roadmapService";
 import { SpecialCircumstance } from "../types/index";
 import { VALID_CASE_STATUSES } from "../models/Client";
 import { db } from "../db/index";
+import { getOnlineOptionForStep } from "../data/stepLinks";
+import { RoadmapStep } from "../models/Roadmap";
+
+/**
+ * For each action_step, parse its description JSON and inject an onlineOption
+ * field (matching agency link + instructions). Returns a new array — no DB writes.
+ */
+function enrichStepsWithOnlineOptions(steps: RoadmapStep[]): RoadmapStep[] {
+  return steps.map((step) => {
+    if (step.stage !== "action_step") return step;
+    try {
+      const parsed = JSON.parse(step.description) as Record<string, unknown>;
+      const action = typeof parsed.action === "string" ? parsed.action : step.title;
+      const onlineOption = getOnlineOptionForStep(action, step.title);
+      if (!onlineOption) return step;
+      return { ...step, description: JSON.stringify({ ...parsed, onlineOption }) };
+    } catch {
+      return step;
+    }
+  });
+}
 
 const generateId = (): string => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -138,7 +159,8 @@ router.get(
         return;
       }
 
-      const { roadmap, steps } = await getOrCreateRoadmapForClient(client);
+      const { roadmap, steps: rawSteps } = await getOrCreateRoadmapForClient(client);
+      const steps = enrichStepsWithOnlineOptions(rawSteps);
 
       const docCount = [
         client.documentStatus.birthCert, client.documentStatus.ssn,
@@ -231,7 +253,8 @@ router.patch(
       const updatedClient = await getClientForCaseManager(clientId, userId);
       if (!updatedClient) { res.status(500).json({ error: "Client disappeared after update" }); return; }
 
-      const { roadmap: updatedRoadmap, steps } = await getOrCreateRoadmapForClient(updatedClient);
+      const { roadmap: updatedRoadmap, steps: updatedRawSteps } = await getOrCreateRoadmapForClient(updatedClient);
+      const steps = enrichStepsWithOnlineOptions(updatedRawSteps);
       res.json({
         success: true,
         steps,
