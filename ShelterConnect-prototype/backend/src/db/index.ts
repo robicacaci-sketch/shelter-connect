@@ -4,25 +4,9 @@ import fs from "fs";
 
 sqlite3.verbose();
 
-// On Railway the source filesystem is read-only after build — use /tmp which
-// is always writable. Locally use the data/ directory next to the source.
-// Railway sets RAILWAY_ENVIRONMENT_NAME (not RAILWAY_ENVIRONMENT).
-const onRailway = !!(
-  process.env.RAILWAY_ENVIRONMENT_NAME ||
-  process.env.RAILWAY_PROJECT_ID ||
-  process.env.RAILWAY_SERVICE_ID
-);
-const defaultDbPath = onRailway
-  ? "/tmp/housing-readiness.db"
-  : path.join(__dirname, "..", "..", "data", "housing-readiness.db");
-
-const dbFile = process.env.SQLITE_PATH || defaultDbPath;
-
-// Ensure the data directory exists (only needed for non-/tmp paths)
-const dbDir = path.dirname(dbFile);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-}
+// Use /tmp for the database — guaranteed writable on all platforms
+// (Railway, Render, local Mac/Linux). Override with SQLITE_PATH if needed.
+const dbFile = process.env.SQLITE_PATH || "/tmp/housing-readiness.db";
 
 export const db = new sqlite3.Database(dbFile);
 
