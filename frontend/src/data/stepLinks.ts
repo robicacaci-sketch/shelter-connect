@@ -125,6 +125,30 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
       instructions: "This is the NJ DCF hub for all transitional housing programs for youth ages 18–21. Click 'Find Housing Resources' → select the county → review available programs (Supervised Transitional Living, Permanent Supportive Housing, LifeSet). Call the Adolescent Housing Hub 24/7 at 1-877-652-7624 to begin an application. Email DCF.OfficeofHousing@dcf.nj.gov for non-urgent inquiries.",
     },
   },
+  {
+    keywords: ["income proof", "income letter", "income verification", "benefit letter", "va benefits", "benefits agency", "income documentation", "proof of income"],
+    option: {
+      url: "https://www.va.gov/records/download-va-letters/",
+      label: "Download VA Benefit Verification Letter (Income Proof)",
+      instructions: "Sign in to VA.gov → click 'Download VA Letters' → select 'Benefit Summary Letter' or 'Benefit Verification Letter' → download and print. This letter is official proof of VA income/benefits and is accepted by HUD, landlords, and all NJ housing programs. If the veteran doesn't yet have VA benefits, call 1-877-424-3838 to begin a benefits application.",
+    },
+  },
+  {
+    keywords: ["va healthcare", "va health care", "va enrollment", "va medical center", "va health", "enroll in va", "10-10ez"],
+    option: {
+      url: "https://www.va.gov/health-care/apply-for-health-care-form-10-10ez/",
+      label: "Apply for VA Healthcare Online (Form 10-10EZ)",
+      instructions: "Click 'Start your application' → sign in with Login.gov or ID.me → complete VA Form 10-10EZ online. Have the veteran's SSN, DD-214, and any insurance information ready. Homeless veterans receive priority enrollment (Priority Group 1). Confirmation letter and VA Health ID card are issued after approval — both required for HUD-VASH eligibility.",
+    },
+  },
+  {
+    keywords: ["hud-vash", "hudvash", "vash", "vash voucher", "hud vash", "voucher application", "housing voucher application"],
+    option: {
+      url: "https://www.va.gov/homeless/hud-vash.asp",
+      label: "HUD-VASH Program — Apply Through Local VA",
+      instructions: "HUD-VASH applications are submitted through the veteran's assigned VA Medical Center (VAMC). Visit this page → click 'Contact the National Call Center for Homeless Veterans' (1-877-424-3838) → the call center will connect to the local VAMC HUD-VASH coordinator who manages the voucher application. Have SSN card, DD-214, birth certificate, income proof, and VA healthcare enrollment confirmation ready.",
+    },
+  },
 ];
 
 export function getOnlineOptionForStep(title: string, extra?: string): OnlineOption | null {
