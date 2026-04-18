@@ -101,6 +101,30 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
       instructions: "Click 'Apply for Services' → select Housing → enter county and income → submit intake form. Free for income-qualifying NJ residents. Also call 1-888-576-5529 Mon–Fri.",
     },
   },
+  {
+    keywords: ["dcpp", "child protection", "permanency", "foster care", "case file", "dcf case", "dcf record"],
+    option: {
+      url: "https://www.nj.gov/dcf/contact/dcpplocal/",
+      label: "Find Local NJ DCPP Office (NJ DCF)",
+      instructions: "This page lists all local DCPP offices by county. Find the office for the client's county → call or email to request the case file and any identity documents on record. You can also email Dcfask.Records@dcf.nj.gov directly with the client's name and case number. Include a copy of their ID. Standard turnaround is 5–10 business days.",
+    },
+  },
+  {
+    keywords: ["covenant house", "youth shelter", "shelter intake", "youth engagement center", "youth placement"],
+    option: {
+      url: "https://covenanthousenj.org/",
+      label: "Covenant House NJ — Youth Shelter Intake",
+      instructions: "Visit covenanthousenj.org → click 'Get Help' to find intake information for the Newark location. Walk-in intake is accepted 24/7 at 330 Washington Street, Newark NJ. You can also call 973-621-8705 or text 844-912-1291. Services are free for youth ages 18–21. Bring any available ID — they will assist with document recovery on-site.",
+    },
+  },
+  {
+    keywords: ["dcf transitional", "transitional housing", "youth transitional", "age 18", "adolescent housing", "older youth", "njyrs", "lifeset", "supervised transitional"],
+    option: {
+      url: "https://www.nj.gov/njyrs/housing/adolescent-hub/",
+      label: "NJ DCF Adolescent Housing Hub (Youth Ages 18–21)",
+      instructions: "This is the NJ DCF hub for all transitional housing programs for youth ages 18–21. Click 'Find Housing Resources' → select the county → review available programs (Supervised Transitional Living, Permanent Supportive Housing, LifeSet). Call the Adolescent Housing Hub 24/7 at 1-877-652-7624 to begin an application. Email DCF.OfficeofHousing@dcf.nj.gov for non-urgent inquiries.",
+    },
+  },
 ];
 
 export function getOnlineOptionForStep(title: string, extra?: string): OnlineOption | null {
