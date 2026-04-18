@@ -1,7 +1,7 @@
 // apiRequest — absolute base URL, token-based auth (used by clientApi.ts)
 const getBaseUrl = () =>
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  "http://localhost:4000";
+  "https://shelter-connect-production-d053.up.railway.app";
 
 type ApiRequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -37,10 +37,8 @@ export const apiRequest = async <TResponse>(
   return (await response.json()) as TResponse;
 };
 
-// request — uses VITE_API_BASE_URL in production, falls back to Vite proxy in dev
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)
-  ? `${import.meta.env.VITE_API_BASE_URL}/api`
-  : "/api";
+// request — uses same base URL as apiRequest so localhost + Vercel both hit Railway
+const API_BASE = `${getBaseUrl()}/api`;
 
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
