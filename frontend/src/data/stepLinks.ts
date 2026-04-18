@@ -142,11 +142,11 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
     },
   },
   {
-    keywords: ["hud-vash", "hudvash", "vash", "vash voucher", "hud vash", "voucher application", "housing voucher application"],
+    keywords: ["hud-vash", "hudvash", "vash", "vash voucher", "hud vash", "voucher application", "housing voucher application", "voucher status", "housing search", "apartment search", "housing specialist", "rental search"],
     option: {
       url: "https://www.va.gov/homeless/hud-vash.asp",
       label: "HUD-VASH Program — Apply Through Local VA",
-      instructions: "HUD-VASH applications are submitted through the veteran's assigned VA Medical Center (VAMC). Visit this page → click 'Contact the National Call Center for Homeless Veterans' (1-877-424-3838) → the call center will connect to the local VAMC HUD-VASH coordinator who manages the voucher application. Have SSN card, DD-214, birth certificate, income proof, and VA healthcare enrollment confirmation ready.",
+      instructions: "HUD-VASH applications go through the veteran's local VA Medical Center. Call 1-877-424-3838 to connect to your VAMC's HUD-VASH coordinator. Once a voucher is issued, use HUD's affordablehousing.com or ask the housing specialist for a list of local landlords who accept HUD-VASH vouchers — starting the apartment search early (before voucher issuance) reduces the gap to move-in.",
     },
   },
 ];
