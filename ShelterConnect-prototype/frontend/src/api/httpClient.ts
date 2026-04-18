@@ -1,7 +1,7 @@
 // apiRequest — absolute base URL, token-based auth (used by clientApi.ts)
 const getBaseUrl = () =>
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  "http://localhost:4000";
+  "https://shelter-connect.onrender.com";
 
 type ApiRequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -37,9 +37,7 @@ export const apiRequest = async <TResponse>(
   return (await response.json()) as TResponse;
 };
 
-// request — Vite proxy (/api base), header-based auth (used by authApi.ts)
-const API_BASE = "/api";
-
+// request — uses same base URL as apiRequest so localhost + Vercel both hit Render
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   headers?: Record<string, string>;
@@ -52,7 +50,7 @@ async function request<TResponse>(
 ): Promise<TResponse> {
   const { method = "GET", headers, body } = options;
 
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(`${getBaseUrl()}/api${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
