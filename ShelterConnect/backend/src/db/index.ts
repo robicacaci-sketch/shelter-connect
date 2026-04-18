@@ -1,11 +1,9 @@
 import sqlite3 from "sqlite3";
-import path from "path";
 
 sqlite3.verbose();
 
-const dbFile =
-  process.env.DATABASE_URL ||
-  path.join(__dirname, "..", "..", "data", "housing-readiness.db");
+// /tmp is guaranteed writable on Railway, Render, and local Mac/Linux
+const dbFile = process.env.SQLITE_PATH || "/tmp/housing-readiness.db";
 
 export const db = new sqlite3.Database(dbFile);
 
