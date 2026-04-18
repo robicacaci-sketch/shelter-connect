@@ -4,6 +4,7 @@ export interface User {
   name: string;
   provider: string;
   providerId: string;
+  passwordHash?: string;
   createdAt: string;
   updatedAt: string;
 }

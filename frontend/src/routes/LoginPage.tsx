@@ -18,9 +18,6 @@ const LoginPage: React.FC = () => {
       }}>
         {/* Left: copy */}
         <div style={{ flex: 1, maxWidth: "440px" }}>
-          <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", fontWeight: 700, color: "#1A7FD4", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Built for shelter managers
-          </p>
           <h1 style={{ margin: "0 0 1rem", fontSize: "2.4rem", fontWeight: 800, color: "#0D1F3C", lineHeight: 1.2 }}>
             Every individual deserves<br />a clear path home.
           </h1>
