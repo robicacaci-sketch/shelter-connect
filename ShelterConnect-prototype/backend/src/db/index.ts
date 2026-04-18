@@ -6,7 +6,13 @@ sqlite3.verbose();
 
 // On Railway the source filesystem is read-only after build — use /tmp which
 // is always writable. Locally use the data/ directory next to the source.
-const defaultDbPath = process.env.RAILWAY_ENVIRONMENT
+// Railway sets RAILWAY_ENVIRONMENT_NAME (not RAILWAY_ENVIRONMENT).
+const onRailway = !!(
+  process.env.RAILWAY_ENVIRONMENT_NAME ||
+  process.env.RAILWAY_PROJECT_ID ||
+  process.env.RAILWAY_SERVICE_ID
+);
+const defaultDbPath = onRailway
   ? "/tmp/housing-readiness.db"
   : path.join(__dirname, "..", "..", "data", "housing-readiness.db");
 
