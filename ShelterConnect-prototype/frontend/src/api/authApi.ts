@@ -28,6 +28,22 @@ export async function loginWithDemoProfile(): Promise<LoginResponse> {
   });
 }
 
+// Email/password login
+export async function loginWithEmail(email: string, password: string): Promise<LoginResponse> {
+  return request<LoginResponse>("/auth/login", {
+    method: "POST",
+    body: { provider: "email", email, password }
+  });
+}
+
+// Email/password registration
+export async function registerWithEmail(name: string, email: string, password: string): Promise<LoginResponse> {
+  return request<LoginResponse>("/auth/register", {
+    method: "POST",
+    body: { name, email, password }
+  });
+}
+
 export async function getCurrentUser(token: string): Promise<MeResponse> {
   return request<MeResponse>("/auth/me", {
     method: "GET",
