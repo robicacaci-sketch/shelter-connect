@@ -19,11 +19,11 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
   },
   {
     keywords: ["dv hotline", "domestic violence hotline", "dv shelter", "domestic violence shelter", "njcasa", "shelter system"],
-    option: { url: "https://www.njcasa.org/find-help/", label: "Find NJ DV Shelter & Services (NJCASA)", instructions: "Click 'Find Help Near You' → enter the client's county → locate the nearest DV shelter and advocate. DV shelters use a safe address system — never use the abuser's address on any documents. The on-site advocate can start the shelter placement process immediately." }
+    option: { url: "https://njcedv.org/helplines/", label: "Find NJ DV Shelter & Hotline (NJCEDV)", instructions: "This is the NJ Coalition to End Domestic Violence. Click 'Find Help' → select your county → contact the local DV shelter directly. The on-site advocate will arrange safe shelter placement and begin the Address Confidentiality Program enrollment. NJ DV Hotline: 1-800-572-SAFE (7233), available 24/7." }
   },
   {
     keywords: ["address confidentiality", "acp", "confidential address", "safe address", "safe mailing"],
-    option: { url: "https://www.nj.gov/state/acp/index.shtml", label: "NJ Address Confidentiality Program (ACP) — Enroll Online", instructions: "Click 'Apply for the ACP' → download the application form → complete it with the DV shelter advocate present → submit to the NJ ACP office. Once enrolled, the client receives a substitute address for all mail, government records, and housing applications. Processing takes 5–10 business days." }
+    option: { url: "https://www.nj.gov/dcf/women/acp/", label: "NJ Address Confidentiality Program — Apply Online (NJ DCF)", instructions: "Click 'Apply for the ACP' → download the application → complete it with a DV shelter advocate present → submit to the NJ ACP office (PO Box 207, Trenton NJ 08602). Once enrolled, the client receives a substitute address for all government mail and records. Processing takes 5–10 business days. Free of charge. Call 1-877-218-9133 for assistance." }
   },
   {
     keywords: ["address proof", "address verification", "proof of address", "address letter", "address verification letter"],
@@ -31,7 +31,7 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
   },
   {
     keywords: ["familycare", "medicaid", "njhelps", "snap", "food stamp", "nj benefits"],
-    option: { url: "https://www.njhelps.org", label: "Apply for NJ Benefits at NJHelps.org", instructions: "Click 'Apply Now' → select programs (NJ FamilyCare, SNAP, WorkFirst NJ) → complete the form. No SSN required to start. Emergency SNAP can be approved in 7 days." }
+    option: { url: "https://www.njhelps.gov", label: "Apply for NJ Benefits at NJHelps.gov", instructions: "Click 'Apply Now' → select programs (NJ FamilyCare/Medicaid, SNAP, WorkFirst NJ) → complete the online form. No SSN required to start. Screening takes 5–10 minutes; full application 20–45 minutes. Emergency SNAP can be approved in 7 days." }
   },
   {
     keywords: ["211", "nj 211", "homelessness prevention", "hpp"],
@@ -47,7 +47,7 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
   },
   {
     keywords: ["dca", "section 8", "rental assistance", "housing assistance", "housing voucher", "emergency housing voucher", "ehv"],
-    option: { url: "https://www.nj.gov/dca/divisions/dhcr/offices/homeprev.html", label: "Apply for NJ Housing Assistance (DCA/HPP)", instructions: "Scroll to the county contacts table → find the client's county HPP coordinator → call or email to start the application. Also call NJ 211 for a direct referral." }
+    option: { url: "https://www.nj.gov/dca/dhcr/offices/dhcrohp.shtml", label: "NJ Office of Homelessness Prevention (DCA)", instructions: "This is the NJ DCA Office of Homelessness Prevention. Scroll to find your county's HPP coordinator contact → call or email to begin a rental assistance application. For fastest results, also call NJ 211 (dial 2-1-1) for a direct warm referral to your county coordinator." }
   },
   {
     keywords: ["legal services", "eviction", "legal aid", "lsnj", "housing court"],
