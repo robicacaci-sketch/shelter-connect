@@ -4,13 +4,15 @@ import fs from "fs";
 
 sqlite3.verbose();
 
-// NOTE: Do NOT use DATABASE_URL here — Railway sets that to a PostgreSQL URL
-// which would crash SQLite. Use SQLITE_PATH for a custom path if needed.
-const dbFile =
-  process.env.SQLITE_PATH ||
-  path.join(__dirname, "..", "..", "data", "housing-readiness.db");
+// On Railway the source filesystem is read-only after build — use /tmp which
+// is always writable. Locally use the data/ directory next to the source.
+const defaultDbPath = process.env.RAILWAY_ENVIRONMENT
+  ? "/tmp/housing-readiness.db"
+  : path.join(__dirname, "..", "..", "data", "housing-readiness.db");
 
-// Ensure the data directory exists (Railway / Render / local all need this)
+const dbFile = process.env.SQLITE_PATH || defaultDbPath;
+
+// Ensure the data directory exists (only needed for non-/tmp paths)
 const dbDir = path.dirname(dbFile);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
