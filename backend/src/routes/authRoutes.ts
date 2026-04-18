@@ -1,11 +1,25 @@
 import express from "express";
-import bcrypt from "bcryptjs";
+import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import { findOrCreateUserFromOAuth, createJwtForUser } from "../services/authService";
 import { requireAuth, AuthenticatedRequest } from "../middleware/authMiddleware";
 import { db } from "../db/index";
 import { User } from "../models/User";
 
 const router = express.Router();
+
+// ── Password helpers (Node built-in crypto — no external dep) ──────────────
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, stored: string): boolean {
+  const [salt, hash] = stored.split(":");
+  const hashBuffer = Buffer.from(hash, "hex");
+  const supplied = scryptSync(password, salt, 64);
+  return timingSafeEqual(hashBuffer, supplied);
+}
 
 const generateId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -43,7 +57,7 @@ router.post("/register", async (req, res) => {
       return;
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = hashPassword(password);
     const id = generateId();
     const now = new Date().toISOString();
 
@@ -88,7 +102,7 @@ router.post("/login", async (req, res) => {
         return;
       }
 
-      const valid = await bcrypt.compare(password, user.passwordHash);
+      const valid = verifyPassword(password, user.passwordHash);
       if (!valid) {
         res.status(401).json({ error: "Invalid email or password" });
         return;
