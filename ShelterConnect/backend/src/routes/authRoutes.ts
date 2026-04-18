@@ -1,4 +1,5 @@
 import express from "express";
+import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import { findOrCreateUserFromOAuth, createJwtForUser } from "../services/authService";
 import { requireAuth, AuthenticatedRequest } from "../middleware/authMiddleware";
 import { db } from "../db/index";
@@ -6,23 +7,122 @@ import { User } from "../models/User";
 
 const router = express.Router();
 
-// Simplified OAuth login endpoint.
-// Expects provider-verified profile and returns a JWT.
-router.post("/login", async (req, res) => {
-  const { provider, providerId, email, name } = req.body ?? {};
+// ── Password helpers (Node built-in crypto — no external dep) ──────────────
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
 
+function verifyPassword(password: string, stored: string): boolean {
+  const [salt, hash] = stored.split(":");
+  const hashBuffer = Buffer.from(hash, "hex");
+  const supplied = scryptSync(password, salt, 64);
+  return timingSafeEqual(hashBuffer, supplied);
+}
+
+const generateId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
+// ─── POST /api/auth/register ─────────────────────────────────────────────────
+router.post("/register", async (req, res) => {
+  const { name, email, password } = req.body ?? {};
+
+  if (!name || !email || !password) {
+    res.status(400).json({ error: "Name, email, and password are required" });
+    return;
+  }
+
+  if (password.length < 6) {
+    res.status(400).json({ error: "Password must be at least 6 characters" });
+    return;
+  }
+
+  try {
+    const existing = await new Promise<User | undefined>((resolve, reject) => {
+      db.get<User>(
+        "SELECT id FROM users WHERE email = ?",
+        [email],
+        (err, row) => { if (err) reject(err); else resolve(row); }
+      );
+    });
+
+    if (existing) {
+      res.status(409).json({ error: "An account with this email already exists" });
+      return;
+    }
+
+    const passwordHash = hashPassword(password);
+    const id = generateId();
+    const now = new Date().toISOString();
+
+    await new Promise<void>((resolve, reject) => {
+      db.run(
+        `INSERT INTO users (id, email, name, provider, providerId, passwordHash, createdAt, updatedAt)
+         VALUES (?, ?, ?, 'email', ?, ?, ?, ?)`,
+        [id, email, name, email, passwordHash, now, now],
+        (err) => { if (err) reject(err); else resolve(); }
+      );
+    });
+
+    const user: User = { id, email, name, provider: "email", providerId: email, createdAt: now, updatedAt: now };
+    const token = createJwtForUser(user);
+    res.status(201).json({ token, user: { id, email, name } });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("Register error", err);
+    res.status(500).json({ error: "Registration failed" });
+  }
+});
+
+// ─── POST /api/auth/login ────────────────────────────────────────────────────
+router.post("/login", async (req, res) => {
+  const { provider, providerId, email, name, password } = req.body ?? {};
+
+  // Email + password branch (no provider field sent by frontend)
+  if (email && password && !provider) {
+    try {
+      const user = await new Promise<(User & { passwordHash?: string }) | undefined>((resolve, reject) => {
+        db.get<User & { passwordHash?: string }>(
+          "SELECT * FROM users WHERE email = ? AND provider = 'email'",
+          [email],
+          (err, row) => { if (err) reject(err); else resolve(row); }
+        );
+      });
+
+      if (!user || !user.passwordHash) {
+        res.status(401).json({ error: "Invalid email or password" });
+        return;
+      }
+
+      const valid = verifyPassword(password, user.passwordHash);
+      if (!valid) {
+        res.status(401).json({ error: "Invalid email or password" });
+        return;
+      }
+
+      const token = createJwtForUser(user);
+      res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Email login error", err);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+    return;
+  }
+
+  // OAuth / demo login
   if (!provider || !providerId || !email || !name) {
     res.status(400).json({ error: "Missing required OAuth profile fields" });
     return;
   }
 
   try {
-    const user = await findOrCreateUserFromOAuth({
-      provider,
-      providerId,
-      email,
-      name
-    });
+    const user = await findOrCreateUserFromOAuth({ provider, providerId, email, name });
     const token = createJwtForUser(user);
     res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
@@ -32,7 +132,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Returns the current authenticated user.
+// ─── GET /api/auth/me ─────────────────────────────────────────────────────────
 router.get("/me", requireAuth, (req: AuthenticatedRequest, res) => {
   const userId = req.userId;
   if (!userId) {
@@ -60,4 +160,3 @@ router.get("/me", requireAuth, (req: AuthenticatedRequest, res) => {
 });
 
 export default router;
-

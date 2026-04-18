@@ -43,6 +43,9 @@ export const initDb = () => {
     // Migrate existing DBs that don't yet have this column (error silently ignored)
     db.run(`ALTER TABLE clients ADD COLUMN case_status TEXT NOT NULL DEFAULT 'Active'`, () => {});
 
+    // Migrate users table to support email/password auth
+    db.run(`ALTER TABLE users ADD COLUMN passwordHash TEXT`, () => {});
+
     db.run(`
       CREATE TABLE IF NOT EXISTS roadmaps (
         id TEXT PRIMARY KEY,
