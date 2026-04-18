@@ -454,23 +454,6 @@ export const COMBO_MATRIX: Record<string, ComboEntry> = {
     estimatedTime: "2–3 weeks for SSN; intake starts immediately",
     programsAccessible: ["NJ CoC Coordinated Entry (NOW)", "NJ FamilyCare / Medicaid", "NJ SNAP", "NJ DCA Housing Programs"],
   },
-  "Y-Y-N-N-N": {
-    comboId: 26,
-    priority: "HIGH",
-    docsHave: ["Birth Cert", "SSN Card"],
-    docsMissing: ["NJ State ID", "Address Proof", "Income Proof"],
-    firstAction: "Get Homeless Verification Letter, then book NJ MVC State ID immediately: telegov.njportal.com/njmvc",
-    steps: [
-      "Call NJ 211 → emergency shelter + Homeless Verification Letter (same day)",
-      "Book NJ MVC State ID: telegov.njportal.com/njmvc ($24 or free with waiver)",
-      "Complete Zero-Income Self-Certification",
-      "Submit NJ CoC Coordinated Entry intake",
-    ],
-    fastestPath: "211 → Shelter + Verification Letter (same day) → NJ MVC State ID (1–2 wks) → Zero-Income Self-Cert → NJ CoC Intake",
-    workarounds: ["Birth cert + SSN unlocks NJ FamilyCare and SNAP applications NOW"],
-    estimatedTime: "3–6 weeks",
-    programsAccessible: ["NJ FamilyCare / Medicaid", "NJ SNAP", "Emergency shelter via NJ 211"],
-  },
   "Y-Y-N-N-Y": {
     comboId: 27,
     priority: "HIGH",

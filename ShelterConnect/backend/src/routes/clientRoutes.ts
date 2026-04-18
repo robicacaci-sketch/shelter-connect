@@ -59,7 +59,7 @@ router.post(
     }
 
     for (const key of DOC_BOOLEAN_KEYS) {
-      if (typeof (documentStatus as Record<string, unknown>)[key] !== "boolean") {
+      if (typeof (documentStatus as unknown as Record<string, unknown>)[key] !== "boolean") {
         res.status(400).json({ error: `documentStatus.${key} must be a boolean` });
         return;
       }
@@ -190,7 +190,7 @@ router.patch(
 
     const DOC_KEYS = ["birthCert", "ssn", "stateId", "address", "income"] as const;
     for (const key of DOC_KEYS) {
-      if (typeof (documentStatus as Record<string, unknown>)[key] !== "boolean") {
+      if (typeof (documentStatus as unknown as Record<string, unknown>)[key] !== "boolean") {
         res.status(400).json({ error: `documentStatus.${key} must be a boolean` });
         return;
       }
