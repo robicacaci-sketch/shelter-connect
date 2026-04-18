@@ -149,6 +149,46 @@ const RULES: { keywords: string[]; option: OnlineOption }[] = [
       instructions: "HUD-VASH applications go through the veteran's local VA Medical Center. Call 1-877-424-3838 to connect to your VAMC's HUD-VASH coordinator. Once a voucher is issued, use HUD's affordablehousing.com or ask the housing specialist for a list of local landlords who accept HUD-VASH vouchers — starting the apartment search early (before voucher issuance) reduces the gap to move-in.",
     },
   },
+  {
+    keywords: ["area agency on aging", "aging services", "division of aging", "elderly", "senior services", "section 202", "aging in place"],
+    option: {
+      url: "https://www.nj.gov/humanservices/doas/assistance/county-offices/",
+      label: "Find NJ County Office on Aging (Division of Aging Services)",
+      instructions: "Select your county from the list → contact your local Area Agency on Aging (AAA) directly. AAA provides free in-home document assistance, transportation to appointments, and case management for seniors. They can accompany the client to NJ MVC, SSA, and vital records offices. Call the statewide line at 1-877-222-3737 for immediate routing.",
+    },
+  },
+  {
+    keywords: ["itin", "individual taxpayer", "undocumented", "immigration", "no federal id", "no ssn", "without ssn", "tax id"],
+    option: {
+      url: "https://www.irs.gov/tin/itin/how-to-apply-for-an-itin",
+      label: "Apply for an ITIN (IRS — Individual Taxpayer ID)",
+      instructions: "Download Form W-7 from this page → complete it with a certified acceptance agent (CAA) or at an IRS Taxpayer Assistance Center (TAC, appointment required) → submit with identity documents. ITIN does not require SSN or immigration status. Processing takes 7–11 weeks. Legal Services of NJ (1-888-576-5529) can assist with the application at no cost.",
+    },
+  },
+  {
+    keywords: ["veterans haven", "veterans services", "nj dva", "division of veterans", "nj dvs", "veterans service office", "vso"],
+    option: {
+      url: "https://www.nj.gov/dva/",
+      label: "NJ Department of Veterans Affairs — Find Local VSO",
+      instructions: "Click 'Veterans Service Offices' → find your county's VSO → call or walk in. VSOs are free, accredited, and can apply for VA benefits, NJ Veterans Haven placement, and emergency financial assistance on the veteran's behalf. Veterans Haven North (Hunterdon County): 908-537-6100. Veterans Haven South (Camden County): 856-567-5799.",
+    },
+  },
+  {
+    keywords: ["reentry support", "reentry housing", "njdoc", "post-release", "recently released", "county reentry", "ban the box"],
+    option: {
+      url: "https://www.njreentry.org",
+      label: "NJ Reentry Services Directory",
+      instructions: "Click 'Find Services' → select the client's county → browse housing, legal, and benefits programs for returning citizens. All 21 NJ counties have a dedicated reentry housing coordinator. Call the NJ Reentry Support Line at 1-844-917-2325 for immediate routing. Medicaid is automatically reinstated at release — apply same day.",
+    },
+  },
+  {
+    keywords: ["zero income", "zero-income", "self-certification", "income self-cert", "no income", "income certification", "self certif"],
+    option: {
+      url: "https://www.njhelps.gov",
+      label: "Complete Zero-Income Self-Certification via NJHelps.gov",
+      instructions: "Go to NJHelps.gov → click 'Apply Now' → select SNAP and NJ FamilyCare → in the income section, select '$0 income' and complete the zero-income self-certification statement online. This is legally sufficient for all NJ housing program income requirements. No supporting documents needed for zero-income certification.",
+    },
+  },
 ];
 
 export function getOnlineOptionForStep(title: string, extra?: string): OnlineOption | null {
