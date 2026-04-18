@@ -11,16 +11,18 @@ import documentRouter from "./routes/documentRoutes";
 
 dotenv.config();
 
+// Create required directories before opening DB or files
+const uploadsDir = path.join(__dirname, "../uploads");
+const tmpDir = path.join(__dirname, "../uploads/tmp");
+const dataDir = path.join(__dirname, "../../data");
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+
 initDb();
 
 const app = express();
 const port = process.env.PORT || 4000;
-
-// Create uploads directories
-const uploadsDir = path.join(__dirname, "../uploads");
-const tmpDir = path.join(__dirname, "../uploads/tmp");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
 
 app.use(cors());
 app.use(express.json());
