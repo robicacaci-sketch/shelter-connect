@@ -53,8 +53,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
+      // Race the session restore against a 5 s timeout so a slow / offline
+      // backend never leaves the user permanently stuck on a loading screen.
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Session restore timed out")), 5000)
+      );
+
       try {
-        const user = await getCurrentUser(storedToken);
+        const user = await Promise.race([getCurrentUser(storedToken), timeout]);
         setState({ isAuthenticated: true, user, token: storedToken, loading: false });
       } catch {
         window.localStorage.removeItem(AUTH_TOKEN_KEY);
